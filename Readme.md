@@ -5,5 +5,5 @@ Our aim is is automate UZ Clinic Processes like Scheduling, drug despenciary, st
 Run NPM RUN START TO RUN THE DEVELOPMENTAL SERVER 
 ## CONTACT
 If you encounter any problems feel free to contact us below
-<a mailto:"piquiienock365@gmail.com">Email</a>
-<a tel:"+263780308290">Call</a>
+piquiienock365@gmail.com
+
