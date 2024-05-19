@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const Users = require("../../models/auth/Users.cjs");
+const jwt = require("jsonwebtoken");
 
 const addNewUser = async (req, res) => {
   try {
@@ -31,4 +32,66 @@ const addNewUser = async (req, res) => {
     res.status(404).json({ Error: "Internal Server Error" });
   }
 };
-module.exports = { addNewUser };
+const signUser = async (req, res) => {
+  try {
+    await Users.findOne({
+      $or: [
+        { email: req.body.email },
+        { username: req.body.username },
+        { regNumber: req.body.regNumber },
+      ],
+    }).then(async (user) => {
+      if (!user || user == null) {
+        res.status(200).json({
+          error: true,
+          Result: "User not found please register",
+        });
+      } else {
+        if (await bcrypt.compare(req.body.password, user.password)) {
+          const payload = {
+            username: user.username,
+            ID: user._id,
+            role: user.roles,
+          };
+          const accessToken = jwt.sign(
+            payload,
+            process.env.SECRETE_ACCESS_TOKEN,
+            {
+              expiresIn: "15m",
+            }
+          );
+          const refreshToken = jwt.sign(
+            payload,
+            process.env.SECRETE_REFRESH_TOKEN,
+            {
+              expiresIn: "1d",
+            }
+          );
+          await Users.updateOne(
+            { _id: user._id },
+            {
+              $set: {
+                refreshToken: { token: refreshToken, createdAt: Date.now() },
+              },
+            }
+          );
+          res.cookie("jwt", refreshToken, {
+            httpOnly: true,
+            maxAge: 24 * 60 * 60 * 1000,
+          });
+          res.status(200).json({
+            username: user.username,
+            id: user._id,
+            accessToken: accessToken,
+          });
+        } else {
+          res.status(200).json({ error: true, Result: "Incorrect password" });
+        }
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(404).json({ Result: "Internal Server Error" });
+  }
+};
+module.exports = { addNewUser, signUser };
