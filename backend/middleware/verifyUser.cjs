@@ -10,7 +10,6 @@ const verifyToken = (req, res, next) => {
         res.sendStatus(403);
       } else {
         req.user = { userId: decoded.ID, username: decoded.username };
-        console.log(req.user);
         next();
       }
     });

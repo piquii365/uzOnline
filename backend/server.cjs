@@ -24,6 +24,8 @@ app.use(
 app.use("/auth", require("./routes/auth/user.route.cjs"));
 app.use(require("./routes/auth/refreshToken.cjs"));
 app.use(require("./routes/auth/logout.route.cjs"));
+app.use(require("./routes/profile/profile.route.controller.cjs"));
+app.use("/profile", require("./routes/profile/update.profile.route.cjs"));
 //app
 const PORT = process.env.PORT;
 const HOST = process.env.HOST;

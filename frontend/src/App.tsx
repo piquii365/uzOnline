@@ -1,35 +1,39 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import * as React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Header from "./components/Navigation/Header";
+import { Box } from "@mui/material";
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import Home from "./pages/Home";
+import Profile from "./pages/Profile";
+import MedicalHistory from "./components/profile/MedicalHistory";
+import Medication from "./components/profile/Medication";
+import Appointments from "./components/profile/Appointments";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+const App: React.FC = () => {
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <Box sx={{ margin: 0, padding: 0, boxSizing: "border-box" }}>
+      <Router>
+        <Header />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/auth/login" element={<Login />} />
+          <Route path="/auth/register" element={<Register />} />
+          <Route path="/:id/profile" element={<Profile />}>
+            <Route path="/:id/profile/medication" element={<Medication />} />
+            <Route
+              path="/:id/profile/appointments"
+              element={<Appointments />}
+            />
+            <Route
+              path="/:id/profile/medical-history"
+              element={<MedicalHistory />}
+            />
+          </Route>
+        </Routes>
+      </Router>
+    </Box>
+  );
+};
 
-export default App
+export default App;

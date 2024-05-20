@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const addNewUser = async (req, res) => {
   try {
     const values = {
+      fullName: req.body.fullName,
       email: req.body.email,
       username: req.body.username,
       password: await bcrypt.hash(req.body.password, 10),
@@ -36,59 +37,61 @@ const signUser = async (req, res) => {
   try {
     await Users.findOne({
       $or: [
+        { username: req.body.email },
         { email: req.body.email },
-        { username: req.body.username },
-        { regNumber: req.body.regNumber },
+        { regNumber: req.body.email },
       ],
-    }).then(async (user) => {
-      if (!user || user == null) {
-        res.status(200).json({
-          error: true,
-          Result: "User not found please register",
-        });
-      } else {
-        if (await bcrypt.compare(req.body.password, user.password)) {
-          const payload = {
-            username: user.username,
-            ID: user._id,
-            role: user.roles,
-          };
-          const accessToken = jwt.sign(
-            payload,
-            process.env.SECRETE_ACCESS_TOKEN,
-            {
-              expiresIn: "15m",
-            }
-          );
-          const refreshToken = jwt.sign(
-            payload,
-            process.env.SECRETE_REFRESH_TOKEN,
-            {
-              expiresIn: "1d",
-            }
-          );
-          await Users.updateOne(
-            { _id: user._id },
-            {
-              $set: {
-                refreshToken: { token: refreshToken, createdAt: Date.now() },
-              },
-            }
-          );
-          res.cookie("jwt", refreshToken, {
-            httpOnly: true,
-            maxAge: 24 * 60 * 60 * 1000,
-          });
+    })
+      .exec()
+      .then(async (user) => {
+        if (!user || user == null) {
           res.status(200).json({
-            username: user.username,
-            id: user._id,
-            accessToken: accessToken,
+            error: true,
+            Result: "User not found please register",
           });
         } else {
-          res.status(200).json({ error: true, Result: "Incorrect password" });
+          if (await bcrypt.compare(req.body.password, user.password)) {
+            const payload = {
+              username: user.username,
+              ID: user._id,
+              role: user.roles,
+            };
+            const accessToken = jwt.sign(
+              payload,
+              process.env.SECRETE_ACCESS_TOKEN,
+              {
+                expiresIn: "15m",
+              }
+            );
+            const refreshToken = jwt.sign(
+              payload,
+              process.env.SECRETE_REFRESH_TOKEN,
+              {
+                expiresIn: "1d",
+              }
+            );
+            await Users.updateOne(
+              { _id: user._id },
+              {
+                $set: {
+                  refreshToken: { token: refreshToken, createdAt: Date.now() },
+                },
+              }
+            );
+            res.cookie("jwt", refreshToken, {
+              httpOnly: true,
+              maxAge: 24 * 60 * 60 * 1000,
+            });
+            res.status(200).json({
+              username: user.username,
+              id: user._id,
+              accessToken: accessToken,
+            });
+          } else {
+            res.status(200).json({ error: true, Result: "Incorrect password" });
+          }
         }
-      }
-    });
+      });
   } catch (error) {
     console.error(error);
     res.status(404).json({ Result: "Internal Server Error" });

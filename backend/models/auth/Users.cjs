@@ -1,6 +1,13 @@
 const mongoose = require("mongoose");
 const usersSchema = new mongoose.Schema(
   {
+    profilePicture: {
+      type: String,
+    },
+    fullName: {
+      type: String,
+      required: [true, "Input Full Name"],
+    },
     username: {
       type: String,
       unique: [true, "Username already registered"],
@@ -67,21 +74,28 @@ const usersSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "History",
+        default: [],
       },
     ],
     specialConditions: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "SpecialCondition" },
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "SpecialCondition",
+        default: [],
+      },
     ],
     appointments: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Appointment",
+        default: [],
       },
     ],
-    Medication: [
+    medication: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Medication",
+        default: [],
       },
     ],
   },
