@@ -1,14 +1,13 @@
 import * as React from "react";
 import Sidebar from "../components/profile/Sidebar";
 import { Stack, Box } from "@mui/material";
-import { axiosPrivate } from "../api/axios.js";
+import { axiosMediaPrivate } from "../api/axios.js";
 import { Outlet, useParams } from "react-router-dom";
 const Profile: React.FC = () => {
   const { id } = useParams();
   const [user, setUser] = React.useState({});
   React.useEffect(() => {
-    console.log("Page loaded");
-    axiosPrivate
+    axiosMediaPrivate
       .get(`/${id}/profile`)
       .then((result) => {
         setUser(result.data);
@@ -18,9 +17,19 @@ const Profile: React.FC = () => {
       });
   }, []);
   return (
-    <Stack component={"main"}>
+    <Stack component={"main"} direction={"row"}>
       <Sidebar user={user} />
-      <Box sx={{ margin: 0, padding: 0, boxSizing: "border-box" }}>
+      <Box
+        sx={{
+          position: "sticky",
+          borderRadius: "10px",
+          marginTop: "0.4em",
+          marginLeft: "0.4em",
+          backgroundColor: "#D9EFF7",
+          width: "100vw",
+          padding: "0.5em",
+        }}
+      >
         <Outlet />
       </Box>
     </Stack>

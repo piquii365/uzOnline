@@ -8,6 +8,7 @@ router
 
 router.route("/:id/update/email").put(handleUpdate.updateEmail);
 router.route("/:id/update/personal-info").put(handleUpdate.updatePersonalInfo);
+router.route("/:id/update/password").put(handleUpdate.updatePassword);
 router
   .route("/:id/update/specialCondition")
   .put(handleUpdate.updateSpecialConditions);

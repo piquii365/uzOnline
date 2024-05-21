@@ -1,4 +1,5 @@
 const Users = require("../../models/auth/Users.cjs");
+const bcrypt = require("bcrypt");
 const SpecialConditions = require("../../models/clinic/specialConditions.cjs");
 const Medications = require("../../models/clinic/medication.cjs");
 const updateProfilePicture = async (req, res) => {
@@ -126,10 +127,35 @@ const updatePersonalInfo = async (req, res) => {
     res.status(200).json({ Result: "Internal Server error" });
   }
 };
+const updatePassword = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await Users.findOne({ _id: id }).exec();
+    if (user) {
+      const checkPassword = await bcrypt.compare(
+        req.body.oldPassword,
+        user.password
+      );
+      if (checkPassword) {
+        const newPassword = await bcrypt.hash(req.body.newPassword, 10);
+        await Users.updateOne({ _id: id }, { $set: { password: newPassword } });
+        res.status(200).json({ status: true });
+      } else {
+        res.status(200).json({ status: false, Result: "Incorrect password" });
+      }
+    } else {
+      res.status(203);
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(200).json({ Result: "Internal Server Error" });
+  }
+};
 module.exports = {
   updateProfilePicture,
   updateEmail,
   updateSpecialConditions,
   updateMedication,
   updatePersonalInfo,
+  updatePassword,
 };

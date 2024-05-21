@@ -9,6 +9,7 @@ import Profile from "./pages/Profile";
 import MedicalHistory from "./components/profile/MedicalHistory";
 import Medication from "./components/profile/Medication";
 import Appointments from "./components/profile/Appointments";
+import DefaultProfile from "./components/profile/DefaultProfile";
 
 const App: React.FC = () => {
   return (
@@ -21,6 +22,11 @@ const App: React.FC = () => {
           <Route path="/auth/register" element={<Register />} />
           <Route path="/:id/profile" element={<Profile />}>
             <Route path="/:id/profile/medication" element={<Medication />} />
+            <Route
+              path="/:id/profile/appointments"
+              element={<Appointments />}
+            />
+            <Route path="/:id/profile" element={<DefaultProfile />} />
             <Route
               path="/:id/profile/appointments"
               element={<Appointments />}

@@ -87,13 +87,28 @@ const Header = () => {
               display: { xs: "none", md: "flex" },
             }}
           >
-            <Link href={`/`} component={Button} underline="hover">
+            <Link
+              href={`/`}
+              component={Button}
+              underline="hover"
+              color="#0B212F"
+            >
               HOME
             </Link>
-            <Link href={`/help-center`} component={Button} underline="hover">
+            <Link
+              href={`/help-center`}
+              component={Button}
+              underline="hover"
+              color="#0B212F"
+            >
               HELP CENTER
             </Link>
-            <Link href={`/about`} component={Button} underline="hover">
+            <Link
+              href={`/about`}
+              component={Button}
+              underline="hover"
+              color="#0B212F"
+            >
               ABOUT
             </Link>
           </Box>

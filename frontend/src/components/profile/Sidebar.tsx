@@ -28,7 +28,7 @@ const Sidebar: React.FC = ({ user }) => {
   return (
     <Stack
       sx={{
-        width: "18em",
+        minWidth: "18em",
         position: "sticky",
         borderRadius: "10px",
         marginTop: "0.4em",
@@ -69,7 +69,7 @@ const Sidebar: React.FC = ({ user }) => {
               width: "60%",
               borderRadius: "50%",
             }}
-            image="/background.PNG"
+            image={`http://localhost:3001/profile/${user?.profilePicture}`}
             title="Profile"
           />
           <Fab

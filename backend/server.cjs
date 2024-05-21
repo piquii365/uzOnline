@@ -10,6 +10,7 @@ conn();
 const app = express();
 //middleware
 app.use(express.json());
+app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(
