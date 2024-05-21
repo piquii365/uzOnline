@@ -23,6 +23,12 @@ import {
   Logout,
 } from "@mui/icons-material";
 import { useParams } from "react-router-dom";
+const ImageContainer = styled("img")({
+  height: "92%",
+  width: "60%",
+  borderRadius: "50%",
+  border: "1px solid gray",
+});
 const Sidebar: React.FC = ({ user }) => {
   const { id } = useParams();
   return (
@@ -63,14 +69,10 @@ const Sidebar: React.FC = ({ user }) => {
             display: "flex",
           }}
         >
-          <CardMedia
-            sx={{
-              height: "92%",
-              width: "60%",
-              borderRadius: "50%",
-            }}
-            image={`http://localhost:3001/profile/${user?.profilePicture}`}
-            title="Profile"
+          <ImageContainer
+            loading="lazy"
+            src={`http://localhost:3001/profile/${user?.profilePicture}`}
+            alt={"/background.PNG"}
           />
           <Fab
             size="small"
@@ -158,7 +160,7 @@ const Sidebar: React.FC = ({ user }) => {
         <Box sx={{ width: "100%" }}>
           <Button
             component={Link}
-            href={`/profile/${id}/medial-history`}
+            href={`/${id}/profile/medical-history`}
             sx={{ display: "flex", justifyContent: "start", color: "#293855" }}
             size="small"
             fullWidth

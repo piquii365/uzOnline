@@ -80,7 +80,7 @@ const usersSchema = new mongoose.Schema(
     specialConditions: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "SpecialCondition",
+        ref: "SpecialConditions",
         default: [],
       },
     ],
@@ -94,7 +94,7 @@ const usersSchema = new mongoose.Schema(
     medication: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Medication",
+        ref: "Medications",
         default: [],
       },
     ],

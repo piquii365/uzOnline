@@ -1,17 +1,19 @@
 //dependencies
 require("dotenv").config();
 const verify = require("./middleware/verifyUser.cjs");
+const path = require("path");
 const conn = require("./config/dbConnection.cjs");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 const express = require("express");
 const cors = require("cors");
+
 conn();
 const app = express();
 //middleware
 app.use(express.json());
-app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, "..", "public")));
 app.use(cookieParser());
 app.use(
   cors({
@@ -21,6 +23,7 @@ app.use(
     credentials: true,
   })
 );
+
 //routes
 app.use("/auth", require("./routes/auth/user.route.cjs"));
 app.use(require("./routes/auth/refreshToken.cjs"));
