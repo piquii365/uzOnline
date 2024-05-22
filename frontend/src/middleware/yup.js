@@ -22,3 +22,14 @@ export const registerValidationSchema = Yup.object({
     .required("Please confirm password"),
   regNumber: Yup.string().required("Please provide Reg Number"),
 });
+export const addStudentValidationSchema = Yup.object({
+  regNumber: Yup.string()
+    .required("Please provide Reg Number")
+    .matches(/^R.{5,}$/, "Enter reg number as R123456R"),
+  fullName: Yup.string()
+    .required("Please provide Full Name")
+    .matches(
+      /^[A-Za-z]+(?:\s[A-Za-z]+)?(?:\s[A-Za-z]+)+$/,
+      "Enter full name as John Doe"
+    ),
+});

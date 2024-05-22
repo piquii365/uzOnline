@@ -22,7 +22,8 @@ const addNewUser = async (req, res) => {
     if (checkUser) {
       res.status(200).json({
         status: false,
-        Result: "Your email or username, reg number is already registered",
+        registered: true,
+        Result: "User with email or username, reg number is already registered",
       });
     } else {
       await Users.insertMany([values]);
@@ -97,4 +98,20 @@ const signUser = async (req, res) => {
     res.status(404).json({ Result: "Internal Server Error" });
   }
 };
-module.exports = { addNewUser, signUser };
+const getStudent = async (reg, res) => {
+  try {
+    const student = await Users.findOne(
+      { regNumber: req.body.regNumber },
+      { refreshToken: false, password: false }
+    ).exec();
+    if (student) {
+      res.status(200).json({ registered: true, student: student });
+    } else {
+      res.status(200).json({ registered: false });
+    }
+  } catch (error) {
+    res.status(400).json({ Result: "Internal Server Error" });
+    console.error(error);
+  }
+};
+module.exports = { addNewUser, signUser, getStudent };

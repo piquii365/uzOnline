@@ -10,6 +10,9 @@ import MedicalHistory from "./components/profile/MedicalHistory";
 import Medication from "./components/profile/Medication";
 import Appointments from "./components/profile/Appointments";
 import DefaultProfile from "./components/profile/DefaultProfile";
+import ReceptionDashboard from "./components/administration/receptionist/ReceptionDashboard";
+import AddStudent from "./components/administration/receptionist/AddStudent";
+import GetStudent from "./components/administration/receptionist/GetStudent";
 
 const App: React.FC = () => {
   return (
@@ -19,6 +22,10 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/auth/login" element={<Login />} />
+          <Route path="/reception" element={<ReceptionDashboard />}>
+            <Route path="/reception/add-student" element={<AddStudent />} />
+            <Route path="/reception/get-student" element={<GetStudent />} />
+          </Route>
           <Route path="/auth/register" element={<Register />} />
           <Route path="/:id/profile" element={<Profile />}>
             <Route path="/:id/profile/medication" element={<Medication />} />
