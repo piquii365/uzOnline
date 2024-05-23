@@ -3,5 +3,5 @@ const handleUser = require("../../controllers/auth/user.controller.cjs");
 const router = Router();
 router.route("/register").post(handleUser.addNewUser);
 router.route("/signin").post(handleUser.signUser);
-router.route("/student").get(handleUser.getStudent);
+router.route("/student").post(handleUser.getStudent);
 module.exports = router;

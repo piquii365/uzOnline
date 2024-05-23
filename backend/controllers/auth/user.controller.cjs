@@ -98,11 +98,14 @@ const signUser = async (req, res) => {
     res.status(404).json({ Result: "Internal Server Error" });
   }
 };
-const getStudent = async (reg, res) => {
+const getStudent = async (req, res) => {
+  console.log(req.body);
   try {
     const student = await Users.findOne(
-      { regNumber: req.body.regNumber },
-      { refreshToken: false, password: false }
+      {
+        regNumber: req.body.regNumber,
+      },
+      { password: false, refreshToken: false }
     ).exec();
     if (student) {
       res.status(200).json({ registered: true, student: student });

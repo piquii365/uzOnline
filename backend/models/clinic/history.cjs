@@ -1,29 +1,40 @@
 const mongoose = require("mongoose");
 const historySchema = new mongoose.Schema(
   {
+    student: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
     participants: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: "Administration",
       },
     ],
-    history: [
+    condition: [
       {
-        scheduledAppointment: {
-          type: mongoose.Schema.Types.ObjectId,
+        type: String,
+        lowercase: true,
+      },
+    ],
+    prescription: [
+      {
+        name: { type: mongoose.Schema.Types.ObjectId, ref: "Medication" },
+        collectionStatus: {
+          type: String,
+          enum: ["Collected", "Not Collected", "Not Available"],
         },
-        medication: [
-          {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Medication",
-          },
-        ],
-        conditions: [
-          {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Condition",
-          },
-        ],
+        amount: { type: String },
+        receivedFrom: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+        dateReceived: { type: Date, default: Date.now },
+      },
+    ],
+    specialNotes: [{ type: String, lowercase: true }],
+    appointments: [
+      {
+        date: { type: Date },
+        participants: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+        agenda: { type: String },
       },
     ],
   },

@@ -33,3 +33,8 @@ export const addStudentValidationSchema = Yup.object({
       "Enter full name as John Doe"
     ),
 });
+export const regNumberValidationSchema = Yup.object({
+  regNumber: Yup.string()
+    .required("Please provide Reg Number")
+    .matches(/^R.{5,}$/, "Enter reg number as R123456R"),
+});

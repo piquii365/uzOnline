@@ -10,18 +10,27 @@ import {
   Button,
   Link,
 } from "@mui/material";
-import { addStudentValidationSchema } from "../../../middleware/yup.js";
+import { regNumberValidationSchema } from "../../../middleware/yup.js";
 import { axiosPrivate } from "../../../api/axios.js";
+import { useNavigate } from "react-router-dom";
 const GetStudent: React.FC = () => {
+  const [result, setResult] = React.useState("");
+  const navigate = useNavigate();
   const student = {
     regNumber: "",
   };
   const handleSubmit = (values: object) => {
-    console.log("Button Clicked");
     axiosPrivate
-      .get("/auth/student", values)
+      .post("/auth/student", values)
       .then((result) => {
-        console.log(result.data);
+        if (result.data.registered) {
+          navigate("/reception/student-details", {
+            state: values.regNumber,
+          });
+        } else {
+          setResult("Patient not Registered");
+          console.log(result.data);
+        }
       })
       .catch((error) => {
         console.error(error);
@@ -45,7 +54,6 @@ const GetStudent: React.FC = () => {
           flexDirection: "column",
           padding: "0.5em",
           width: "17em",
-          backgroundColor: "#D9EFF7",
         }}
       >
         <Typography variant="body1" paragraph>
@@ -54,12 +62,17 @@ const GetStudent: React.FC = () => {
         <Typography variant="body2" paragraph>
           Provide Reg Number
         </Typography>
+        {result && (
+          <Typography color="red" variant="body2" paragraph>
+            <small>{result}</small>
+          </Typography>
+        )}
         <Divider />
         <Box>
           <Formik
             initialValues={student}
             onSubmit={handleSubmit}
-            validationSchema={addStudentValidationSchema}
+            validationSchema={regNumberValidationSchema}
           >
             {({ handleSubmit, handleBlur, handleChange, errors, touched }) => (
               <Form onSubmit={handleSubmit}>

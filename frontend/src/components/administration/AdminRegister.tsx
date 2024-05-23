@@ -1,3 +1,4 @@
+import * as React from "react";
 import {
   Box,
   Divider,
@@ -12,48 +13,36 @@ import {
   Button,
   Link,
 } from "@mui/material";
-import * as React from "react";
 import { Formik, Form } from "formik";
-import { addStudentValidationSchema } from "../../../middleware/yup.js";
-import { axiosPrivate } from "../../../api/axios.js";
+import { axiosPrivate } from "../../api/axios.js";
 import { useNavigate } from "react-router-dom";
-const AddStudent: React.FC = () => {
+const AdminRegister: React.FC = () => {
   const navigate = useNavigate();
   const [result, setResult] = React.useState("");
-  const student = {
-    fullName: "",
+  const initialValues = {
     username: "",
-    regNumber: "",
-    password: "",
     email: "",
+    password: "",
+    fullName: "",
+    confirmPassword: "",
     gender: "",
+    role: "",
+    idNumber: "",
+    phoneNumber: "",
+    address: "",
   };
   const handleSubmit = (values: object) => {
-    const finalValue = {
-      fullName: values.fullName,
-      username: values.fullName.split(" ")[0],
-      regNumber: values.regNumber,
-      password: values.fullName.split(" ")[0],
-      email: `${values.fullName.replaceAll(/ /g, "")}@gmail.com`,
-      gender: values.gender,
-    };
     axiosPrivate
-      .post("/auth/register", finalValue)
-      .then((result) => {
-        if (result.data.registered) {
-          navigate("/reception/student-details", {
-            state: finalValue.regNumber,
-          });
-        } else if (result.data.status) {
-          navigate("/reception/student-details", {
-            state: finalValue.regNumber,
-          });
+      .post("/admin/new-admin", values)
+      .then((response) => {
+        if (response.data.status) {
+          navigate("/admin/login");
         } else {
-          setResult(result.data.Result);
+          setResult(response.data.Result);
         }
       })
-      .catch((error) => {
-        console.log(error);
+      .catch((err) => {
+        console.log(err);
       });
   };
   return (
@@ -71,27 +60,23 @@ const AddStudent: React.FC = () => {
           display: "flex",
           flexDirection: "column",
           padding: "0.5em",
-          width: "17em",
+          width: "20em",
         }}
       >
         <Typography variant="body1" paragraph>
-          Welcome
+          Administration
         </Typography>
         <Typography variant="body2" paragraph>
-          Add Student
+          Register
         </Typography>
         {result && (
           <Typography color="red" variant="body2" paragraph>
-            <small>{result}</small>
+            {result}
           </Typography>
         )}
         <Divider />
         <Box>
-          <Formik
-            initialValues={student}
-            onSubmit={handleSubmit}
-            validationSchema={addStudentValidationSchema}
-          >
+          <Formik initialValues={initialValues} onSubmit={handleSubmit}>
             {({ handleSubmit, handleBlur, handleChange, errors, touched }) => (
               <Form onSubmit={handleSubmit}>
                 <Box
@@ -106,6 +91,7 @@ const AddStudent: React.FC = () => {
                     label="Full Name"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    required
                     error={touched.fullName && Boolean(errors.fullName)}
                     helperText={touched.fullName && errors.fullName}
                   />
@@ -120,7 +106,9 @@ const AddStudent: React.FC = () => {
                     id="username"
                     type="text"
                     label="Username"
-                    disabled
+                    required
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                   />
                 </Box>
                 <Box
@@ -133,7 +121,9 @@ const AddStudent: React.FC = () => {
                     id="email"
                     type="email"
                     label="Email"
-                    disabled
+                    required
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                   />
                 </Box>
                 <Box
@@ -146,7 +136,9 @@ const AddStudent: React.FC = () => {
                     id="password"
                     type="password"
                     label="password"
-                    disabled
+                    required
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                   />
                 </Box>
                 <Box
@@ -156,14 +148,54 @@ const AddStudent: React.FC = () => {
                   <TextField
                     fullWidth
                     size="small"
-                    id="regNumber"
-                    type="text"
-                    label="Reg Number"
+                    id="confirmPassword"
+                    type="password"
+                    required
+                    label="Confirm Password"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    error={touched.regNumber && Boolean(errors.regNumber)}
-                    helperText={touched.regNumber && errors.regNumber}
                   />
+                </Box>
+                <Box
+                  component={FormControl}
+                  sx={{ py: "0.5em", width: "100%" }}
+                >
+                  <FormLabel id="role">Role</FormLabel>
+                  <RadioGroup
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    aria-labelledby="role"
+                    name="role"
+                    defaultValue="Nurse"
+                    aria-required
+                  >
+                    <FormControlLabel
+                      value="Admin"
+                      control={<Radio />}
+                      label="Admin"
+                      disabled
+                    />
+                    <FormControlLabel
+                      value="Receptionist"
+                      control={<Radio />}
+                      label="Receptionist"
+                    />
+                    <FormControlLabel
+                      value="Doctor"
+                      control={<Radio />}
+                      label="Doctor"
+                    />
+                    <FormControlLabel
+                      value="Pharmacist"
+                      control={<Radio />}
+                      label="Pharmacist"
+                    />
+                    <FormControlLabel
+                      value="Nurse"
+                      control={<Radio />}
+                      label="Nurse"
+                    />
+                  </RadioGroup>
                 </Box>
                 <Box
                   component={FormControl}
@@ -176,7 +208,7 @@ const AddStudent: React.FC = () => {
                     row
                     aria-labelledby="gender"
                     name="gender"
-                    defaultValue="Female"
+                    defaultValue="Male"
                     aria-required
                   >
                     <FormControlLabel
@@ -195,6 +227,50 @@ const AddStudent: React.FC = () => {
                   component={FormControl}
                   sx={{ py: "0.5em", width: "100%" }}
                 >
+                  <TextField
+                    fullWidth
+                    size="small"
+                    id="idNumber"
+                    label="Id Number"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    required
+                  />
+                </Box>
+                <Box
+                  component={FormControl}
+                  sx={{ py: "0.5em", width: "100%" }}
+                >
+                  <TextField
+                    fullWidth
+                    size="small"
+                    id="address"
+                    label="address"
+                    multiline
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    minRows={3}
+                    required
+                  />
+                </Box>
+                <Box
+                  component={FormControl}
+                  sx={{ py: "0.5em", width: "100%" }}
+                >
+                  <TextField
+                    fullWidth
+                    size="small"
+                    id="phoneNumber"
+                    label="Phone Number"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    required
+                  />
+                </Box>
+                <Box
+                  component={FormControl}
+                  sx={{ py: "0.5em", width: "100%" }}
+                >
                   <Button size="small" type="submit" variant="contained">
                     Save
                   </Button>
@@ -203,12 +279,8 @@ const AddStudent: React.FC = () => {
                   component={FormControl}
                   sx={{ py: "0.5em", width: "100%" }}
                 >
-                  <Button
-                    href="/reception/get-student"
-                    size="small"
-                    component={Link}
-                  >
-                    Add Student
+                  <Button href="/admin/login" size="small" component={Link}>
+                    I already have an account
                   </Button>
                 </Box>
               </Form>
@@ -220,4 +292,4 @@ const AddStudent: React.FC = () => {
   );
 };
 
-export default AddStudent;
+export default AdminRegister;
