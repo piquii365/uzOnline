@@ -76,10 +76,13 @@ const signAdmin = async (req, res) => {
           maxAge: 24 * 60 * 60 * 1000,
         });
         res.status(200).json({
-          username: user.username,
-          id: user._id,
-          accessToken: accessToken,
-          role: user.role,
+          status: true,
+          user: {
+            username: user.username,
+            id: user._id,
+            accessToken: accessToken,
+            role: user.role,
+          },
         });
       } else {
         res.status(200).json({

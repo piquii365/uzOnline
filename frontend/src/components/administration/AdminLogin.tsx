@@ -15,8 +15,11 @@ import {
 } from "@mui/material";
 import { Formik, Form } from "formik";
 import { axiosPrivate } from "../../api/axios.js";
+import { useNavigate } from "react-router-dom";
+
 const AdminLogin: React.FC = () => {
   const [result, setResult] = React.useState("");
+  const navigate = useNavigate();
   const initialValues = {
     username: "",
     password: "",
@@ -26,7 +29,15 @@ const AdminLogin: React.FC = () => {
     axiosPrivate
       .post("/admin/sign-admin", values)
       .then((response) => {
-        if (!response.data.status) {
+        if (response.data.status) {
+          if (response.data.user.role == "Receptionist") {
+            navigate("/reception", { state: response.data.user });
+          } else if (response.data.user.role == "Doctor") {
+            navigate("/doctor", { state: response.data.user });
+          } else {
+            setResult("Other User Views will be placed here");
+          }
+        } else {
           setResult(response.data.Result);
         }
       })

@@ -16,6 +16,10 @@ import GetStudent from "./components/administration/receptionist/GetStudent";
 import Reception from "./pages/Reception";
 import AdminRegister from "./components/administration/AdminRegister";
 import AdminLogin from "./components/administration/AdminLogin";
+import ReceptionHome from "./components/administration/receptionist/ReceptionHome";
+import Doctor from "./pages/Doctor";
+import DoctorHome from "./components/administration/doctor/DoctorHome";
+import Patient from "./components/administration/doctor/Patient";
 
 const App: React.FC = () => {
   return (
@@ -27,7 +31,12 @@ const App: React.FC = () => {
           <Route path="/auth/login" element={<Login />} />
           <Route path="/admin/register" element={<AdminRegister />} />
           <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/doctor" element={<Doctor />}>
+            <Route path="/doctor" element={<DoctorHome />} />
+            <Route path="/doctor/current-patient/:id" element={<Patient />} />
+          </Route>
           <Route path="/reception" element={<Reception />}>
+            <Route path="/reception" element={<ReceptionHome />} />
             <Route path="/reception/add-student" element={<AddStudent />} />
             <Route path="/reception/get-student" element={<GetStudent />} />
             <Route

@@ -1,28 +1,17 @@
 import * as React from "react";
-import { Box, Stack, Button, Link } from "@mui/material";
+import { Box } from "@mui/material";
 import { Outlet } from "react-router-dom";
+import ReceptionHeader from "../components/administration/receptionist/ReceptionHeader";
 const Reception: React.FC = () => {
   return (
     <Box
       sx={{
+        position: "fixed",
         width: "100%",
-        margin: 0,
-        padding: 0,
-        display: "flex",
-        flexDirection: "column",
+        height: "80dvh",
       }}
     >
-      <Stack spacing={2} sx={{ width: "100%" }} direction={"row"}>
-        <Button size="small" href="/reception/add-student" component={Link}>
-          Register Student
-        </Button>
-        <Button size="small" href="/reception/get-student" component={Link}>
-          New Patient
-        </Button>
-        <Button size="small" href="/reception/student-records" component={Link}>
-          Student Records
-        </Button>
-      </Stack>
+      <ReceptionHeader />
       <Box component={"section"}>
         <Outlet />
       </Box>

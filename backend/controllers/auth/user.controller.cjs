@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const Users = require("../../models/auth/Users.cjs");
 const jwt = require("jsonwebtoken");
-
+const History = require("../../models/clinic/history.cjs");
 const addNewUser = async (req, res) => {
   try {
     const values = {
@@ -99,7 +99,6 @@ const signUser = async (req, res) => {
   }
 };
 const getStudent = async (req, res) => {
-  console.log(req.body);
   try {
     const student = await Users.findOne(
       {
@@ -108,7 +107,22 @@ const getStudent = async (req, res) => {
       { password: false, refreshToken: false }
     ).exec();
     if (student) {
-      res.status(200).json({ registered: true, student: student });
+      const checkHistory = await History.findOne({
+        student: student._id,
+      }).exec();
+      if (checkHistory) {
+        res.status(200).json({ registered: true, user: student });
+      } else {
+        let newHistory = new History({
+          student: student._id,
+        });
+        await Users.findOneAndUpdate(
+          { _id: student._id },
+          { $addToSet: { medicalHistory: newHistory._id } }
+        );
+        await newHistory.save();
+        res.status(200).json({ registered: true, user: student });
+      }
     } else {
       res.status(200).json({ registered: false });
     }

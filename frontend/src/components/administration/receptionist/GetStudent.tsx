@@ -18,15 +18,18 @@ const GetStudent: React.FC = () => {
   const navigate = useNavigate();
   const student = {
     regNumber: "",
+    temp: 0,
+    weight: 0,
+    BP: "",
   };
   const handleSubmit = (values: object) => {
+    console.log(values);
     axiosPrivate
-      .post("/auth/student", values)
+      .post("/patient/new-patient", values)
       .then((result) => {
+        console.log(result.data);
         if (result.data.registered) {
-          navigate("/reception/student-details", {
-            state: values.regNumber,
-          });
+          setResult("New Patient Added Successfully");
         } else {
           setResult("Patient not Registered");
           console.log(result.data);
@@ -90,6 +93,53 @@ const GetStudent: React.FC = () => {
                     onBlur={handleBlur}
                     error={touched.regNumber && Boolean(errors.regNumber)}
                     helperText={touched.regNumber && errors.regNumber}
+                  />
+                </Box>
+                <Box
+                  component={FormControl}
+                  sx={{
+                    py: "0.5em",
+                    width: "100%",
+                    flexDirection: "row",
+                    gap: "0.5em",
+                  }}
+                >
+                  <TextField
+                    fullWidth
+                    size="small"
+                    id="temp"
+                    inputProps={{
+                      step: 0.01,
+                      min: 34,
+                      max: 42,
+                    }}
+                    type="number"
+                    label="Temp"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  <TextField
+                    fullWidth
+                    size="small"
+                    id="weight"
+                    inputProps={{
+                      step: 0.01,
+                      min: 15,
+                      max: 120,
+                    }}
+                    type="number"
+                    label="Weight"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                  <TextField
+                    fullWidth
+                    size="small"
+                    id="BP"
+                    type="text"
+                    label="Blood Pressure"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                   />
                 </Box>
                 <Box
