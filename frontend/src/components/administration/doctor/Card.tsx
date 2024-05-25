@@ -5,36 +5,191 @@ import {
   Autocomplete,
   FormControl,
   TextField,
+  Button,
 } from "@mui/material";
+import { axiosPrivate } from "../../../api/axios.js";
 import * as React from "react";
-
+import { Formik, Form } from "formik";
+import { useParams } from "react-router-dom";
+import CardCompleteModal from "./CardCompleteModal.js";
 const Card: React.FC = () => {
+  const { id } = useParams();
+  const [card, setCard] = React.useState({});
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = (card) => {
+    setCard(card);
+    setOpen(true);
+  };
+  const handleCose = () => {
+    setOpen(false);
+  };
   const descriptions: string[] = [
+    "Gonorrhea",
+    "HIV",
     "Headache",
-    "stomachache",
-    "itchy wiwie",
-    "gonorrhea",
+    "Stomach pains",
+    "back pains",
+    "eye problems",
   ];
+  const drugs: string[] = [
+    "Amoxcylin 200mg",
+    "Paracetamol 500mg",
+    "Ibrufenamol 500mg",
+  ];
+  const initialValues = {
+    prescription: [],
+    description: [],
+    otherDescription: "",
+    prescriptionRecommendation: "",
+    recommendation: "",
+  };
+  const handleSubmit = (values) => {
+    axiosPrivate
+      .put(`patient/${id}/doctor-prescription`, values)
+      .then((result) => {
+        if (result.data.status) {
+          handleOpen(result.data.Result);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
   return (
     <Box
       component={Paper}
       sx={{ padding: "0.5em", height: "100%", width: "inherit" }}
     >
-      <Typography>My Card Goes Here</Typography>
-      <form>
-        <Box component={FormControl} fullWidth>
-          <Autocomplete
-            fullWidth
-            id="description"
-            freeSolo
-            multiple
-            options={descriptions.map((option) => option)}
-            renderInput={(params) => (
-              <TextField {...params} label="Description" />
-            )}
-          />
-        </Box>
-      </form>
+      <Typography sx={{ color: "#1A1A1A" }}>
+        Patient Details and Recommendations are recorded here
+      </Typography>
+      <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+        {({ handleChange, handleBlur, handleSubmit, setFieldValue }) => (
+          <Form onSubmit={handleSubmit}>
+            <Box sx={{ my: "0.2em" }} component={FormControl} fullWidth>
+              <Autocomplete
+                fullWidth
+                id="description"
+                size="small"
+                multiple
+                autoHighlight
+                autoSelect
+                freeSolo
+                disableClearable
+                onChange={(event, newValue) => {
+                  if (typeof newValue === "string") {
+                    setFieldValue("description", newValue);
+                  } else if (newValue && newValue.event) {
+                    setFieldValue("description", newValue.event);
+                  } else {
+                    setFieldValue("description", newValue);
+                  }
+                }}
+                onBlur={handleBlur}
+                options={descriptions.map((option) => option)}
+                renderInput={(params) => (
+                  <TextField {...params} label="Description" />
+                )}
+              />
+            </Box>
+            <Box sx={{ my: "0.2em" }} component={FormControl} fullWidth>
+              <TextField
+                fullWidth
+                id="otherDescription"
+                size="small"
+                multiline
+                minRows={3}
+                label="Other Description"
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
+            </Box>
+            <Box sx={{ my: "0.2em" }} component={FormControl} fullWidth>
+              <Autocomplete
+                fullWidth
+                id="prescription"
+                size="small"
+                freeSolo
+                multiple
+                disableClearable
+                onChange={(event, newValue) => {
+                  if (typeof newValue === "string") {
+                    setFieldValue("prescription", newValue);
+                  } else if (newValue && newValue.event) {
+                    setFieldValue("prescription", newValue.event);
+                  } else {
+                    setFieldValue("prescription", newValue);
+                  }
+                }}
+                onBlur={handleBlur}
+                options={drugs.map((drug) => drug)}
+                renderInput={(params) => (
+                  <TextField {...params} label="Prescription" />
+                )}
+              />
+            </Box>
+            <Box sx={{ my: "0.2em" }} component={FormControl} fullWidth>
+              <TextField
+                fullWidth
+                id="prescriptionRecommendation"
+                size="small"
+                multiline
+                minRows={3}
+                label="Recommendation on Prescription"
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
+            </Box>
+            <Box sx={{ my: "0.2em" }} component={FormControl} fullWidth>
+              <TextField
+                fullWidth
+                id="recommendation"
+                size="small"
+                multiline
+                minRows={3}
+                label="Overall Recommendation"
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
+            </Box>
+            <Box
+              sx={{
+                my: "0.2em",
+                display: "flex",
+                gap: "0.5em",
+                flexDirection: "row",
+              }}
+              component={FormControl}
+              fullWidth
+            >
+              <Button
+                sx={{
+                  bgcolor: "green",
+                  maxWidth: "fit-content",
+                  color: "white",
+                  "&:hover": { bgcolor: "gray" },
+                }}
+                size="small"
+                type="submit"
+              >
+                Done
+              </Button>
+              <Button
+                sx={{
+                  bgcolor: "#293855",
+                  maxWidth: "fit-content",
+                  color: "white",
+                  "&:hover": { bgcolor: "#BEC3C7" },
+                }}
+                size="small"
+              >
+                Schedule Appointment
+              </Button>
+            </Box>
+          </Form>
+        )}
+      </Formik>
+      <CardCompleteModal card={card} open={open} handleClose={handleCose} />
     </Box>
   );
 };

@@ -5,4 +5,5 @@ router.route("/details/:regNumber").get(handlePatient.getPatientDetails);
 router.route("/new-patient").post(handlePatient.newPatient);
 router.route("/card/:id").get(handlePatient.getCard);
 router.route("/current/:id").get(handlePatient.getPatient);
+router.route("/:id/doctor-prescription").put(handlePatient.prescription);
 module.exports = router;

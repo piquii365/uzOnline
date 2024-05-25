@@ -40,32 +40,7 @@ const Patient = () => {
     nextOfKinRelationship: "",
     nextOfKinPhoneNumber: "",
   });
-  const [visits, setVisits] = React.useState([
-    {
-      date: "",
-      temp: 0,
-      weight: 0,
-      BP: "",
-      purposeOfVisit: [],
-      prescription: [
-        {
-          drug: "",
-          quantity: "",
-          prescribedBy: "",
-          routine: "",
-          collected: "",
-          recommendations: "",
-        },
-      ],
-      appointments: [
-        {
-          date: "",
-          purpose: [],
-        },
-      ],
-      recommendations: [],
-    },
-  ]);
+  const [visits, setVisits] = React.useState([]);
   const [result, setResult] = React.useState("");
   const { id } = useParams();
   const fetchPatient = React.useCallback(async () => {
@@ -101,31 +76,26 @@ const Patient = () => {
             ? response.data.patient.nextOfKin.phoneNumber
             : "Not Provided",
       });
+      console.log(response.data);
     } else {
+      console.log(response.data);
       setResult("Patient not registered");
     }
   }, []);
   const fetchCard = React.useCallback(async () => {
     const response = await axiosPrivate.get(`/patient/card/${id}`);
     if (response.data.registered) {
-      response.data.card.visit.map((visit, index) => {
-        setVisits({
-          ...visits,
-          date: visit.date,
-          temp: visit.temp,
-          weight: visit.weight,
-          BP: visit.BP,
-        });
-      });
+      setVisits(response.data.card.visit);
     } else {
       setResult("Patient not registered");
     }
+    console.log(response.data.card.visit);
   }, []);
   React.useEffect(() => {
     fetchPatient();
     fetchCard();
-  }, [fetchPatient, fetchCard, id]);
-  console.log(visits);
+  }, [fetchPatient, fetchCard]);
+
   return (
     <Box sx={{ display: "flex", width: "100%" }}>
       <Stack sx={{ width: "17em", height: "inherit", paddingTop: "1em" }}>
@@ -233,22 +203,50 @@ const Patient = () => {
             >
               Card
             </Typography>
-            {result ? (
+            {visits.length === 0 || undefined ? (
               <Typography color="red" variant="body2" paragraph>
                 Patient did not register
               </Typography>
             ) : (
               <Box
                 sx={{
-                  height: "60dvh",
+                  height: "90dvh",
                   display: "flex",
                   flexDirection: "column",
                   gap: "0.5em",
                 }}
               >
-                <Typography color="red" variant="body2" paragraph>
-                  Date:
-                </Typography>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography color="red" variant="body2" paragraph>
+                    Date:{new Date(visits[0].date).toDateString()}
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: "0.5em",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography
+                      color={
+                        visits[0].temp <= 35
+                          ? "blue"
+                          : visits[0].temp >= 37.7
+                          ? "red"
+                          : "green"
+                      }
+                    >
+                      Temp:{visits[0].temp}
+                    </Typography>
+                    <Typography>BP:{visits[0]?.BP}</Typography>
+                  </Box>
+                </Box>
                 <Card />
               </Box>
             )}

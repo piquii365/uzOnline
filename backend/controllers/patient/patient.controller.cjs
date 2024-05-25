@@ -83,5 +83,39 @@ const getPatient = async (req, res) => {
     console.error(error);
   }
 };
-
-module.exports = { getPatientDetails, newPatient, getCard, getPatient };
+const prescription = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { prescription, description, recommendation } = req.body;
+    await Card.findOneAndUpdate(
+      { "visit._id": "6650d3ec057916afd1b0fca7" },
+      {
+        $addToSet: {
+          "visit.$.purposeOfVisit": { $each: description },
+          "visit.$.prescription": { $each: prescription },
+          "visit.$.recommendations": recommendation,
+        },
+      }
+    )
+      .then((result) => {
+        res.status(200).json({ status: true, Result: result.visit[0] });
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(200).json({
+          status: false,
+          Result: "Error while communicating with the database",
+        });
+      });
+  } catch (error) {
+    res.status(400).json({ Result: "Internal Server Error" });
+    console.error(error);
+  }
+};
+module.exports = {
+  getPatientDetails,
+  newPatient,
+  getCard,
+  getPatient,
+  prescription,
+};
