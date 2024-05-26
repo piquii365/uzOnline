@@ -40,7 +40,7 @@ const Patient = () => {
     nextOfKinRelationship: "",
     nextOfKinPhoneNumber: "",
   });
-  const [visits, setVisits] = React.useState([]);
+  const [card, setCard] = React.useState({});
   const [result, setResult] = React.useState("");
   const { id } = useParams();
   const fetchPatient = React.useCallback(async () => {
@@ -85,312 +85,348 @@ const Patient = () => {
   const fetchCard = React.useCallback(async () => {
     const response = await axiosPrivate.get(`/patient/card/${id}`);
     if (response.data.registered) {
-      setVisits(response.data.card.visit);
+      setCard(response.data.card);
     } else {
       setResult("Patient not registered");
     }
-    console.log(response.data.card.visit);
+    console.log(response.data.card);
   }, []);
   React.useEffect(() => {
     fetchPatient();
     fetchCard();
   }, [fetchPatient, fetchCard]);
-
+  const currentCard = card?.visit?.find((cardItem) => {
+    return cardItem._id === card.currentCard;
+  });
+  console.log(currentCard);
   return (
-    <Box sx={{ display: "flex", width: "100%" }}>
-      <Stack sx={{ width: "17em", height: "inherit", paddingTop: "1em" }}>
-        <Typography sx={{ marginLeft: "0.5em" }} variant="body1" paragraph>
-          {patient?.regNumber}
-        </Typography>
+    <>
+      {patient !== null || undefined ? (
+        <Box sx={{ display: "flex", width: "100%" }}>
+          <Stack sx={{ width: "17em", height: "inherit", paddingTop: "1em" }}>
+            <Typography sx={{ marginLeft: "0.5em" }} variant="body1" paragraph>
+              {patient?.regNumber}
+            </Typography>
 
-        <ButtonGroup
-          sx={{ display: "flex", flexDirection: "column", gap: "0.5em" }}
-        >
-          <Badge badgeContent={patient?.specialConditions?.length}>
-            <NavButton href="#specialConditions" fullWidth size="small">
-              Special Conditions
-            </NavButton>
-          </Badge>
-          <Badge badgeContent={patient?.medicalHistory?.length}>
-            <NavButton href="#history" fullWidth size="small">
-              History
-            </NavButton>
-          </Badge>
-          <Badge badgeContent={patient?.medication?.length}>
-            <NavButton href="#medication" fullWidth size="small">
-              Medication
-            </NavButton>
-          </Badge>
-          <Badge badgeContent={patient?.appointments?.length}>
-            <NavButton href="#appointments" fullWidth size="small">
-              Appointments
-            </NavButton>
-          </Badge>
-        </ButtonGroup>
-        <Divider />
-        <Typography sx={{ marginLeft: "0.5em" }} variant="body1" paragraph>
-          Actions
-        </Typography>
-        <ButtonGroup
-          sx={{ display: "flex", flexDirection: "column", gap: "0.5em" }}
-        >
-          <NavButton href="#notes" size="small" fullWidth>
-            Write Notes
-          </NavButton>
-          <NavButton href="#prescription" size="small" fullWidth>
-            Write Prescription
-          </NavButton>
-        </ButtonGroup>
-      </Stack>
-      <Box
-        sx={{
-          display: "flex",
-          width: "inherit",
-          justifyContent: "center",
-          padding: "0.5em 2em",
-          marginLeft: "0.5em",
-          maxHeight: "inherit",
-        }}
-      >
-        <Box
-          sx={{
-            width: "100%",
-            padding: "0.5em",
-            maxHeight: "80dvh",
-            overflowY: "scroll",
-          }}
-        >
-          <Box component={Paper} sx={{ padding: "0.5em", marginBottom: "1em" }}>
-            <Typography
-              sx={{
-                padding: "0.5em",
-                width: "inherit",
-                backgroundColor: "#293855",
-                color: "white",
-              }}
-              paragraph
+            <ButtonGroup
+              sx={{ display: "flex", flexDirection: "column", gap: "0.5em" }}
             >
-              Patient Information
+              <Badge badgeContent={patient?.specialConditions?.length}>
+                <NavButton href="#specialConditions" fullWidth size="small">
+                  Special Conditions
+                </NavButton>
+              </Badge>
+              <Badge badgeContent={patient?.medicalHistory?.length}>
+                <NavButton href="#history" fullWidth size="small">
+                  History
+                </NavButton>
+              </Badge>
+              <Badge badgeContent={patient?.medication?.length}>
+                <NavButton href="#medication" fullWidth size="small">
+                  Medication
+                </NavButton>
+              </Badge>
+              <Badge badgeContent={patient?.appointments?.length}>
+                <NavButton href="#appointments" fullWidth size="small">
+                  Appointments
+                </NavButton>
+              </Badge>
+            </ButtonGroup>
+            <Divider />
+            <Typography sx={{ marginLeft: "0.5em" }} variant="body1" paragraph>
+              Actions
             </Typography>
-            <Box>
-              <Table>
-                <TableBody>
-                  <TableRow>
-                    <TableCell sx={{ border: "none" }} component={"th"}>
-                      Full Name
-                    </TableCell>
-                    <TableCell sx={{ border: "none" }} component={"td"}>
-                      {patient?.fullName}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell component={"th"}>Gender</TableCell>
-                    <TableCell component={"td"}>{patient?.gender}</TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </Box>
-          </Box>
-          <Box component={Paper} sx={{ padding: "0.5em", marginBottom: "1em" }}>
-            <Typography
-              sx={{
-                padding: "0.5em",
-                width: "inherit",
-                backgroundColor: "#293855",
-                color: "white",
-              }}
-              paragraph
+            <ButtonGroup
+              sx={{ display: "flex", flexDirection: "column", gap: "0.5em" }}
             >
-              Card
-            </Typography>
-            {visits.length === 0 || undefined ? (
-              <Typography color="red" variant="body2" paragraph>
-                Patient did not register
-              </Typography>
-            ) : (
+              <NavButton href="#notes" size="small" fullWidth>
+                Write Notes
+              </NavButton>
+              <NavButton href="#prescription" size="small" fullWidth>
+                Write Prescription
+              </NavButton>
+            </ButtonGroup>
+          </Stack>
+          <Box
+            sx={{
+              display: "flex",
+              width: "inherit",
+              justifyContent: "center",
+              padding: "0.5em 2em",
+              marginLeft: "0.5em",
+              maxHeight: "inherit",
+            }}
+          >
+            <Box
+              sx={{
+                width: "100%",
+                padding: "0.5em",
+                maxHeight: "80dvh",
+                overflowY: "scroll",
+              }}
+            >
               <Box
-                sx={{
-                  height: "90dvh",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "0.5em",
-                }}
+                component={Paper}
+                sx={{ padding: "0.5em", marginBottom: "1em" }}
               >
-                <Box
+                <Typography
                   sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
+                    padding: "0.5em",
+                    width: "inherit",
+                    backgroundColor: "#293855",
+                    color: "white",
                   }}
+                  paragraph
                 >
+                  Patient Information
+                </Typography>
+                <Box>
+                  <Table>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell sx={{ border: "none" }} component={"th"}>
+                          Full Name
+                        </TableCell>
+                        <TableCell sx={{ border: "none" }} component={"td"}>
+                          {patient?.fullName}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell component={"th"}>Gender</TableCell>
+                        <TableCell component={"td"}>
+                          {patient?.gender}
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </Box>
+              </Box>
+              <Box
+                component={Paper}
+                sx={{ padding: "0.5em", marginBottom: "1em" }}
+              >
+                <Typography
+                  sx={{
+                    padding: "0.5em",
+                    width: "inherit",
+                    backgroundColor: "#293855",
+                    color: "white",
+                  }}
+                  paragraph
+                >
+                  Card
+                </Typography>
+                {patient === null || undefined ? (
                   <Typography color="red" variant="body2" paragraph>
-                    Date:{new Date(visits[0].date).toDateString()}
+                    Patient did not register
                   </Typography>
+                ) : (
                   <Box
                     sx={{
+                      height: "fit-content",
                       display: "flex",
+                      flexDirection: "column",
                       gap: "0.5em",
-                      alignItems: "center",
                     }}
                   >
-                    <Typography
-                      color={
-                        visits[0].temp <= 35
-                          ? "blue"
-                          : visits[0].temp >= 37.7
-                          ? "red"
-                          : "green"
-                      }
-                    >
-                      Temp:{visits[0].temp}
-                    </Typography>
-                    <Typography>BP:{visits[0]?.BP}</Typography>
+                    {currentCard === undefined ? (
+                      <Typography>
+                        Failed to load Patient Information
+                      </Typography>
+                    ) : (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Typography color="red" variant="body2" paragraph>
+                          Date:{new Date(currentCard.date).toDateString()}
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            gap: "0.5em",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Typography
+                            color={
+                              currentCard.temp <= 35
+                                ? "blue"
+                                : currentCard.temp >= 37.7
+                                ? "red"
+                                : "green"
+                            }
+                          >
+                            Temp:{currentCard.temp}
+                          </Typography>
+                          <Typography>BP:{currentCard?.BP}</Typography>
+                        </Box>
+                      </Box>
+                    )}
+                    <Card currentCard={card.currentCard} />
                   </Box>
-                </Box>
-                <Card />
+                )}
               </Box>
-            )}
-          </Box>
-          <Box component={Paper} sx={{ padding: "0.5em", marginBottom: "1em" }}>
-            <Typography
-              sx={{
-                padding: "0.5em",
-                width: "inherit",
-                backgroundColor: "#293855",
-                color: "white",
-              }}
-              paragraph
-            >
-              Next Of Kin
-            </Typography>
-            <Box>
-              <Table>
-                <TableBody>
-                  <TableRow>
-                    <TableCell sx={{ border: "none" }} component={"th"}>
-                      Full Name
-                    </TableCell>
-                    <TableCell sx={{ border: "none" }} component={"td"}>
-                      {patient?.nextOfKin?.name
-                        ? patient?.nextOfKin?.name
-                        : "Not Provided"}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell sx={{ border: "none" }} component={"th"}>
-                      Address
-                    </TableCell>
-                    <TableCell sx={{ border: "none" }} component={"td"}>
-                      {patient?.nextOfKin?.address
-                        ? patient?.nextOfKin?.address
-                        : "Not Provided"}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell sx={{ border: "none" }} component={"th"}>
-                      Relationship
-                    </TableCell>
-                    <TableCell sx={{ border: "none" }} component={"td"}>
-                      {patient?.nextOfKin?.relationship
-                        ? patient?.nextOfKin?.relationship
-                        : "Not Provided"}
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell sx={{ border: "none" }} component={"th"}>
-                      Phone Number
-                    </TableCell>
-                    <TableCell sx={{ border: "none" }} component={"td"}>
-                      {patient?.nextOfKin?.phoneNumber
-                        ? patient?.nextOfKin?.phoneNumber
-                        : "Not Provided"}
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </Box>
-          </Box>
-          <Box component={Paper} sx={{ padding: "0.5em", marginBottom: "1em" }}>
-            <Typography
-              sx={{
-                padding: "0.5em",
-                width: "inherit",
-                backgroundColor: "#293855",
-                color: "white",
-              }}
-              paragraph
-            >
-              Special Conditions
-            </Typography>
-            <Box>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell component={"th"}>Name</TableCell>
-                    <TableCell component={"th"}>Date Received</TableCell>
-                    <TableCell component={"th"}>Assigned Doctor</TableCell>
-                    <TableCell component={"th"}>Medication</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {patient?.specialConditions.map((condition, index) => (
-                    <TableRow key={index}>
-                      <TableCell component={"td"} sx={{ border: "none" }}>
-                        {condition.name}
-                      </TableCell>
-                      <TableCell component={"td"} sx={{ border: "none" }}>
-                        {new Date(condition.dateReceived).toDateString()}
-                      </TableCell>
-                      <TableCell component={"td"} sx={{ border: "none" }}>
-                        Not yet assigned
-                      </TableCell>
-                      <TableCell component={"td"} sx={{ border: "none" }}>
-                        No medication assigned for this condition
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Box>
-          </Box>
-          <Box component={Paper} sx={{ padding: "0.5em", marginBottom: "1em" }}>
-            <Typography
-              sx={{
-                padding: "0.5em",
-                width: "inherit",
-                backgroundColor: "#293855",
-                color: "white",
-              }}
-              paragraph
-            >
-              Medication
-            </Typography>
-            <Box>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell component={"th"}>No</TableCell>
-                    <TableCell component={"th"}>Name</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {patient?.medication?.map((drug, index) => (
-                    <TableRow key={index}>
-                      <TableCell component={"td"} sx={{ border: "none" }}>
-                        {index + 1}
-                      </TableCell>
-                      <TableCell component={"td"} sx={{ border: "none" }}>
-                        {drug.name}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <Box
+                component={Paper}
+                sx={{ padding: "0.5em", marginBottom: "1em" }}
+              >
+                <Typography
+                  sx={{
+                    padding: "0.5em",
+                    width: "inherit",
+                    backgroundColor: "#293855",
+                    color: "white",
+                  }}
+                  paragraph
+                >
+                  Next Of Kin
+                </Typography>
+                <Box>
+                  <Table>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell sx={{ border: "none" }} component={"th"}>
+                          Full Name
+                        </TableCell>
+                        <TableCell sx={{ border: "none" }} component={"td"}>
+                          {patient?.nextOfKin?.name
+                            ? patient?.nextOfKin?.name
+                            : "Not Provided"}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell sx={{ border: "none" }} component={"th"}>
+                          Address
+                        </TableCell>
+                        <TableCell sx={{ border: "none" }} component={"td"}>
+                          {patient?.nextOfKin?.address
+                            ? patient?.nextOfKin?.address
+                            : "Not Provided"}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell sx={{ border: "none" }} component={"th"}>
+                          Relationship
+                        </TableCell>
+                        <TableCell sx={{ border: "none" }} component={"td"}>
+                          {patient?.nextOfKin?.relationship
+                            ? patient?.nextOfKin?.relationship
+                            : "Not Provided"}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell sx={{ border: "none" }} component={"th"}>
+                          Phone Number
+                        </TableCell>
+                        <TableCell sx={{ border: "none" }} component={"td"}>
+                          {patient?.nextOfKin?.phoneNumber
+                            ? patient?.nextOfKin?.phoneNumber
+                            : "Not Provided"}
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </Box>
+              </Box>
+              <Box
+                component={Paper}
+                sx={{ padding: "0.5em", marginBottom: "1em" }}
+              >
+                <Typography
+                  sx={{
+                    padding: "0.5em",
+                    width: "inherit",
+                    backgroundColor: "#293855",
+                    color: "white",
+                  }}
+                  paragraph
+                >
+                  Special Conditions
+                </Typography>
+                <Box>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell component={"th"}>Name</TableCell>
+                        <TableCell component={"th"}>Date Received</TableCell>
+                        <TableCell component={"th"}>Assigned Doctor</TableCell>
+                        <TableCell component={"th"}>Medication</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {patient?.specialConditions.map((condition, index) => (
+                        <TableRow key={index}>
+                          <TableCell component={"td"} sx={{ border: "none" }}>
+                            {condition.name}
+                          </TableCell>
+                          <TableCell component={"td"} sx={{ border: "none" }}>
+                            {new Date(condition.dateReceived).toDateString()}
+                          </TableCell>
+                          <TableCell component={"td"} sx={{ border: "none" }}>
+                            Not yet assigned
+                          </TableCell>
+                          <TableCell component={"td"} sx={{ border: "none" }}>
+                            No medication assigned for this condition
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </Box>
+              </Box>
+              <Box
+                component={Paper}
+                sx={{ padding: "0.5em", marginBottom: "1em" }}
+              >
+                <Typography
+                  sx={{
+                    padding: "0.5em",
+                    width: "inherit",
+                    backgroundColor: "#293855",
+                    color: "white",
+                  }}
+                  paragraph
+                >
+                  Medication
+                </Typography>
+                <Box>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell component={"th"}>No</TableCell>
+                        <TableCell component={"th"}>Name</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {patient?.medication?.map((drug, index) => (
+                        <TableRow key={index}>
+                          <TableCell component={"td"} sx={{ border: "none" }}>
+                            {index + 1}
+                          </TableCell>
+                          <TableCell component={"td"} sx={{ border: "none" }}>
+                            {drug.name}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </Box>
+              </Box>
             </Box>
           </Box>
         </Box>
-      </Box>
-    </Box>
+      ) : (
+        <Box>
+          <Typography variant={"h3"} paragraph>
+            404 PAGE NOT FOUND
+          </Typography>
+        </Box>
+      )}
+    </>
   );
 };
 

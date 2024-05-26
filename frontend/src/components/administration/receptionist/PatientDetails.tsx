@@ -13,65 +13,11 @@ import {
 } from "@mui/material";
 import * as React from "react";
 
-import { axiosPrivate } from "../../../api/axios.js";
 import { useLocation } from "react-router-dom";
 const PatientDetails: React.FC = () => {
-  const { state: regNumber } = useLocation();
-  console.log("Reg Number" + regNumber);
-  const [student, setStudent] = React.useState({
-    fullName: "",
-    regNumber: "",
-    physicalAddress: "",
-    specialConditions: [],
-    medication: [],
-    medicalHistory: [],
-    gender: "",
-    nextOfKin: "",
-    nextOfKinAddress: "",
-    nextOfKinRelationship: "",
-    nextOfKinPhoneNumber: "",
-  });
-  React.useEffect(() => {
-    axiosPrivate
-      .post("/student/student-info", { regNumber })
-      .then((result) => {
-        console.log(result.data);
-        setStudent({
-          ...student,
-          fullName: result.data.fullName,
-          regNumber: result.data.regNumber,
+  const { state } = useLocation();
+  const patient = state.patient;
 
-          physicalAddress:
-            result.data.address !== undefined
-              ? result.data.address
-              : "Not Provided",
-          specialConditions: result.data.specialConditions,
-          medication: result.data.medication,
-          medicalHistory: result.data.medicalHistory,
-          gender: result.data.gender,
-          nextOfKin:
-            result.data.nextOfKin?.name !== undefined
-              ? result.data.nextOfKin.name
-              : "Not Provided",
-          nextOfKinAddress:
-            result.data.nextOfKin?.address !== undefined
-              ? result.data.nextOfKin.address
-              : "Not Provided",
-          nextOfKinRelationship:
-            result.data.nextOfKin?.relationship !== undefined
-              ? result.data.nextOfKin.relationship
-              : "Not Provided",
-          nextOfKinPhoneNumber:
-            result.data.nextOfKin?.phoneNumber !== undefined
-              ? result.data.nextOfKin.phoneNumber
-              : "Not Provided",
-        });
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
-  console.log(student);
   return (
     <Box
       sx={{
@@ -95,17 +41,17 @@ const PatientDetails: React.FC = () => {
             height: "100dvh",
           }}
         >
-          <Badge badgeContent={student.medicalHistory.length}>
+          <Badge badgeContent={patient?.medicalHistory?.length}>
             <Button href="#medicalHistory" component={Link} fullWidth>
               Medical History
             </Button>
           </Badge>
-          <Badge badgeContent={student.specialConditions.length}>
+          <Badge badgeContent={patient?.specialConditions?.length}>
             <Button href="#specialConditions" component={Link} fullWidth>
               Special Conditions
             </Button>
           </Badge>
-          <Badge badgeContent={student.medication.length}>
+          <Badge badgeContent={patient?.medication?.length}>
             <Button href="#medication" component={Link} fullWidth>
               Medication
             </Button>
@@ -137,85 +83,99 @@ const PatientDetails: React.FC = () => {
             <Typography variant="body1" paragraph>
               <strong>Patient Information.</strong>
             </Typography>
-            <Table sx={{ width: "inherit" }}>
-              <tbody>
-                <TableRow>
-                  <TableCell component={"th"}>
-                    <small>Full Name</small>
-                  </TableCell>
-                  <TableCell component={"td"}>
-                    <small>{student.fullName}</small>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell component={"th"}>
-                    <small>Reg Number</small>
-                  </TableCell>
-                  <TableCell component={"td"}>
-                    <small>{student.regNumber}</small>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell component={"th"}>
-                    <small>Address</small>
-                  </TableCell>
-                  <TableCell component={"td"}>
-                    <small>{student.physicalAddress}</small>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell component={"th"}>
-                    <small>Gender</small>
-                  </TableCell>
-                  <TableCell component={"td"}>
-                    <small>{student.gender}</small>
-                  </TableCell>
-                </TableRow>
-              </tbody>
-            </Table>
+            {patient ? (
+              <Table sx={{ width: "inherit" }}>
+                <tbody>
+                  <TableRow>
+                    <TableCell component={"th"}>
+                      <small>Full Name</small>
+                    </TableCell>
+                    <TableCell component={"td"}>
+                      <small>{patient.fullName}</small>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell component={"th"}>
+                      <small>Reg Number</small>
+                    </TableCell>
+                    <TableCell component={"td"}>
+                      <small>{patient.regNumber}</small>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell component={"th"}>
+                      <small>Address</small>
+                    </TableCell>
+                    <TableCell component={"td"}>
+                      <small>{patient.physicalAddress}</small>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell component={"th"}>
+                      <small>Gender</small>
+                    </TableCell>
+                    <TableCell component={"td"}>
+                      <small>{patient.gender}</small>
+                    </TableCell>
+                  </TableRow>
+                </tbody>
+              </Table>
+            ) : (
+              <Typography variant="body2" paragraph>
+                Loading....
+              </Typography>
+            )}
+
             <Typography variant="body2" paragraph>
               <strong>Next Of Kin</strong>
             </Typography>
-            <Table>
-              <TableBody>
-                <TableRow>
-                  <TableCell component={"th"}>
-                    <small>Name</small>
-                  </TableCell>
-                  <TableCell component={"td"}>
-                    <small>{student.nextOfKin}</small>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell component={"th"}>
-                    <small>Address</small>
-                  </TableCell>
-                  <TableCell component={"td"}>
-                    <small>{student.nextOfKinAddress}</small>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell component={"th"}>
-                    <small>Contact</small>
-                  </TableCell>
-                  <TableCell component={"td"}>
-                    <small>
-                      <Link href={`tel:${student.nextOfKinPhoneNumber}`}>
-                        {student.nextOfKinPhoneNumber}
-                      </Link>
-                    </small>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell component={"th"}>
-                    <small>Relationship</small>
-                  </TableCell>
-                  <TableCell component={"td"}>
-                    <small>{student.nextOfKinRelationship}</small>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+            {patient ? (
+              <Table>
+                <TableBody>
+                  <TableRow>
+                    <TableCell component={"th"}>
+                      <small>Name</small>
+                    </TableCell>
+                    <TableCell component={"td"}>
+                      <small>{patient.nextOfKin}</small>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell component={"th"}>
+                      <small>Address</small>
+                    </TableCell>
+                    <TableCell component={"td"}>
+                      <small>{patient.nextOfKinAddress}</small>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell component={"th"}>
+                      <small>Contact</small>
+                    </TableCell>
+                    <TableCell component={"td"}>
+                      <small>
+                        <Link href={`tel:${patient.nextOfKinPhoneNumber}`}>
+                          {patient.nextOfKinPhoneNumber}
+                        </Link>
+                      </small>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell component={"th"}>
+                      <small>Relationship</small>
+                    </TableCell>
+                    <TableCell component={"td"}>
+                      <small>{patient.nextOfKinRelationship}</small>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            ) : (
+              <Typography variant="body2" paragraph>
+                Next of kin details were not provided
+              </Typography>
+            )}
+
             <Box
               sx={{
                 width: "100%",
@@ -229,32 +189,36 @@ const PatientDetails: React.FC = () => {
                   Medication
                 </Typography>
                 <Box>
-                  <Table sx={{ maxHeight: "inherit", overflowY: "auto" }}>
-                    <TableHead sx={{ backgroundColor: "#293855" }}>
-                      <TableRow>
-                        <TableCell component={"th"} sx={{ color: "white" }}>
-                          <small>No</small>
-                        </TableCell>
-                        <TableCell component={"th"} sx={{ color: "white" }}>
-                          <small>Name</small>
-                        </TableCell>
-                      </TableRow>
-                    </TableHead>
-                    {student.medication.length > 0 && (
-                      <TableBody>
-                        {student.medication.map((drug, index) => (
-                          <TableRow key={index}>
-                            <TableCell component={"td"}>
-                              <small>{index}</small>
-                            </TableCell>
-                            <TableCell component={"td"}>
-                              <small>{drug.name}</small>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    )}
-                  </Table>
+                  {patient ? (
+                    <Table sx={{ maxHeight: "inherit", overflowY: "auto" }}>
+                      <TableHead sx={{ backgroundColor: "#293855" }}>
+                        <TableRow>
+                          <TableCell component={"th"} sx={{ color: "white" }}>
+                            <small>No</small>
+                          </TableCell>
+                          <TableCell component={"th"} sx={{ color: "white" }}>
+                            <small>Name</small>
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      {patient.medication.length > 0 && (
+                        <TableBody>
+                          {patient.medication.map((drug, index) => (
+                            <TableRow key={index}>
+                              <TableCell component={"td"}>
+                                <small>{index}</small>
+                              </TableCell>
+                              <TableCell component={"td"}>
+                                <small>{drug.name}</small>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      )}
+                    </Table>
+                  ) : (
+                    <Typography>Medication Not available</Typography>
+                  )}
                 </Box>
               </Box>
               <Box id="specialConditions">
@@ -262,57 +226,90 @@ const PatientDetails: React.FC = () => {
                   Special Conditions
                 </Typography>
                 <Box sx={{ maxHeight: "50%" }}>
-                  <Table
-                    sx={{
-                      width: "100%",
-                      overflowY: "auto",
-                      maxHeight: "inherit",
-                    }}
-                  >
-                    <TableHead sx={{ backgroundColor: "#293855" }}>
-                      <TableRow>
-                        <TableCell component={"th"} sx={{ color: "white" }}>
-                          <small>Condition</small>
-                        </TableCell>
-                        <TableCell component={"th"} sx={{ color: "white" }}>
-                          <small>Medication</small>
-                        </TableCell>
-                        <TableCell component={"th"} sx={{ color: "white" }}>
-                          <small>Personnel In Charge</small>
-                        </TableCell>
-                        <TableCell component={"th"} sx={{ color: "white" }}>
-                          <small>Date Registered</small>
-                        </TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {student.specialConditions.length > 0 &&
-                        student.specialConditions.map((condition, index) => (
-                          <TableRow key={index}>
-                            <TableCell component={"td"}>
-                              <small>{condition.name}</small>
-                            </TableCell>
-                            <TableCell component={"td"}>
-                              <small>Medication</small>
-                            </TableCell>
-                            <TableCell component={"td"}>
-                              <small>Personnel In Charge</small>
-                            </TableCell>
-                            <TableCell component={"td"}>
-                              <small>
-                                {new Date(condition.createdAt).toDateString()}
-                              </small>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                    </TableBody>
-                  </Table>
+                  {patient ? (
+                    <Table
+                      sx={{
+                        width: "100%",
+                        overflowY: "auto",
+                        maxHeight: "inherit",
+                      }}
+                    >
+                      <TableHead sx={{ backgroundColor: "#293855" }}>
+                        <TableRow>
+                          <TableCell component={"th"} sx={{ color: "white" }}>
+                            <small>Condition</small>
+                          </TableCell>
+                          <TableCell component={"th"} sx={{ color: "white" }}>
+                            <small>Medication</small>
+                          </TableCell>
+                          <TableCell component={"th"} sx={{ color: "white" }}>
+                            <small>Personnel In Charge</small>
+                          </TableCell>
+                          <TableCell component={"th"} sx={{ color: "white" }}>
+                            <small>Date Registered</small>
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {patient.specialConditions.length > 0 &&
+                          patient.specialConditions.map((condition, index) => (
+                            <TableRow key={index}>
+                              <TableCell component={"td"}>
+                                <small>{condition.name}</small>
+                              </TableCell>
+                              <TableCell component={"td"}>
+                                <small>Medication</small>
+                              </TableCell>
+                              <TableCell component={"td"}>
+                                <small>Personnel In Charge</small>
+                              </TableCell>
+                              <TableCell component={"td"}>
+                                <small>
+                                  {new Date(condition.createdAt).toDateString()}
+                                </small>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                      </TableBody>
+                    </Table>
+                  ) : (
+                    <Typography variant="body2" paragraph>
+                      Special Conditions history not available yet
+                    </Typography>
+                  )}
                 </Box>
               </Box>
             </Box>
             <Box id="medicalHistory">
               <Typography>Medical History</Typography>
               <Box>
+                {patient ? (
+                  <Table>
+                    <TableHead sx={{ backgroundColor: "#293855" }}>
+                      <TableRow>
+                        <TableCell component={"th"} sx={{ color: "white" }}>
+                          <small>Date</small>
+                        </TableCell>
+                        <TableCell component={"th"} sx={{ color: "white" }}>
+                          <small>Participants</small>
+                        </TableCell>
+                        <TableCell component={"th"} sx={{ color: "white" }}>
+                          <small>Prescription</small>
+                        </TableCell>
+                        <TableCell component={"th"} sx={{ color: "white" }}>
+                          <small>Status</small>
+                        </TableCell>
+                        <TableCell component={"th"} sx={{ color: "white" }}>
+                          <small>Notes</small>
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                  </Table>
+                ) : (
+                  <Typography variant="body2" paragraph>
+                    Medical history not available yet
+                  </Typography>
+                )}
                 <Table>
                   <TableHead sx={{ backgroundColor: "#293855" }}>
                     <TableRow>

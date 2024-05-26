@@ -26,6 +26,7 @@ const cardSchema = new mongoose.Schema(
         recommendations: { type: String },
       },
     ],
+    currentCard: { type: mongoose.Schema.Types.ObjectId },
   },
   { timestamps: true, strictPopulate: false }
 );

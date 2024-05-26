@@ -5,7 +5,10 @@ const History = require("../../models/clinic/history.cjs");
 const newPatient = async (req, res) => {
   try {
     const { regNumber, temp, weight, BP } = req.body;
-    const user = await Users.findOne({ regNumber: regNumber }).exec();
+    const user = await Users.findOne(
+      { regNumber: regNumber },
+      { password: 0, refreshToken: 0, roles: 0, username: 0, profilePicture: 0 }
+    ).exec();
     if (!user) {
       res.status(200).json({ registered: false });
     } else {
@@ -16,17 +19,76 @@ const newPatient = async (req, res) => {
           visit: { date: Date.now(), temp: temp, weight: weight, BP: BP },
         });
         await card.save();
-        res.status(200).json({ registered: true, user: user });
-      } else {
         await Card.findOneAndUpdate(
           { cardOwnerId: user._id },
-          {
-            $addToSet: {
-              visit: { date: Date.now(), temp: temp, weight: weight, BP: BP },
-            },
-          }
+          { $set: { currentPrescription: card.visit[0]._id } }
         );
-        res.status(200).json({ registered: true, user: user });
+
+        console.log(card);
+        res.status(200).json({
+          registered: true,
+          user: user,
+          currentRecord: card.visit._id,
+        });
+      } else {
+        const currentVisit = card.visit.find((visit) => {
+          return (visit._id = card.currentCard);
+        });
+        const checkDates = (d1, d2) => {
+          return (
+            d1.getUTCFullYear() == d2.getUTCFullYear() &&
+            d1.getUTCMonth() == d2.getUTCMonth() &&
+            d1.getUTCDate() == d2.getUTCDate()
+          );
+        };
+        if (checkDates(new Date(currentVisit.date), new Date())) {
+          const newOne = await Card.findOneAndUpdate(
+            {
+              $and: [
+                { cardOwnerId: user._id },
+                { "visit._id": card.currentCard },
+              ],
+            },
+            {
+              $set: {
+                "visit.$": {
+                  date: Date.now(),
+                  temp: temp,
+                  weight: weight,
+                  BP: BP,
+                  _id: card.currentCard,
+                },
+              },
+            },
+            { upsert: true, new: true }
+          );
+          res.status(200).json({
+            registered: true,
+            Card: newOne,
+            user: user,
+            currentVisit: card.currentCard,
+          });
+        } else {
+          let newCard = await Card.findOneAndUpdate(
+            { cardOwnerId: user._id },
+            {
+              $addToSet: {
+                visit: { date: Date.now(), temp: temp, weight: weight, BP: BP },
+              },
+            }
+          );
+          const currentCardRecord = newCard.visit[0]._id;
+          const updatedCard = await Card.findOneAndUpdate(
+            { cardOwnerId: user._id },
+            { $set: { currentCard: currentCardRecord } }
+          );
+          res.status(200).json({
+            registered: true,
+            user: user,
+            Card: newCard,
+            currentVisit: currentCardRecord,
+          });
+        }
       }
     }
   } catch (error) {
@@ -72,8 +134,7 @@ const getPatient = async (req, res) => {
   try {
     const user = await Users.findOne(
       { _id: id },
-      { password: false },
-      { refreshToken: false }
+      { password: 0, refreshToken: 0, roles: 0, username: 0, profilePicture: 0 }
     ).populate(["specialConditions", { path: "medication", select: "name" }]);
     if (user) {
       res.status(200).json({ registered: true, patient: user });
@@ -85,10 +146,10 @@ const getPatient = async (req, res) => {
 };
 const prescription = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id, currentCard } = req.params;
     const { prescription, description, recommendation } = req.body;
-    await Card.findOneAndUpdate(
-      { "visit._id": "6650d3ec057916afd1b0fca7" },
+    const result = await Card.findOneAndUpdate(
+      { $and: [{ cardOwnerId: id }, { "visit._id": currentCard }] },
       {
         $addToSet: {
           "visit.$.purposeOfVisit": { $each: description },
@@ -96,19 +157,42 @@ const prescription = async (req, res) => {
           "visit.$.recommendations": recommendation,
         },
       }
-    )
-      .then((result) => {
-        res.status(200).json({ status: true, Result: result.visit[0] });
-      })
-      .catch((error) => {
-        console.error(error);
-        res.status(200).json({
-          status: false,
-          Result: "Error while communicating with the database",
-        });
+    );
+
+    if (result) {
+      let prescription = result.visit.find((visit) => {
+        return visit._id == currentCard;
       });
+      res.status(200).json({ status: true, FullPrescription: prescription });
+    } else {
+      res.status(200).json({
+        status: false,
+        Result: "Error while saving prescription recommended action re-save",
+      });
+    }
   } catch (error) {
     res.status(400).json({ Result: "Internal Server Error" });
+    console.error(error);
+  }
+};
+const getPrescription = async (req, res) => {
+  try {
+    const { regNumber } = req.body;
+    const user = await Users.findOne({ regNumber: regNumber }, { _id: 1 });
+    if (user) {
+      const prescription = await Card.findOne({ cardOwnerId: user._id });
+      if (prescription) {
+        res.status(200).json({ status: true, Prescription: prescription });
+      } else {
+        res.status(200).json({ status: false });
+      }
+    } else {
+      res.status(200).json({ status: false, Result: "Patient not found " });
+    }
+  } catch (error) {
+    res
+      .status(404)
+      .json({ Result: "The Server Responded With Page Not Found" });
     console.error(error);
   }
 };
@@ -118,4 +202,5 @@ module.exports = {
   getCard,
   getPatient,
   prescription,
+  getPrescription,
 };

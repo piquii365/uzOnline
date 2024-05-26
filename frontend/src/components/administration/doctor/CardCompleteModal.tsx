@@ -6,11 +6,11 @@ import {
   Modal,
   Typography,
   Button,
+  Link,
 } from "@mui/material";
 import * as React from "react";
 
 const CardCompleteModal: Reat.FC = ({ card, open, handleClose }) => {
-  console.log(card);
   return (
     <Box>
       <Modal open={open} onClose={handleClose}>
@@ -61,17 +61,20 @@ const CardCompleteModal: Reat.FC = ({ card, open, handleClose }) => {
             </Box>
           </Box>
           <Box sx={{ display: "flex", gap: "0.5em" }}>
+            <Button size="small" fullWidth>
+              Set Appointment
+            </Button>
             <Button
+              sx={{
+                bgcolor: "#1A1A1A",
+                color: "white",
+                "&:hover": { border: "1px solid #293855", color: "#1a1a1a" },
+              }}
+              href="/doctor"
+              component={Link}
               size="small"
-              sx={{ bgcolor: "#293855", color: "white" }}
               fullWidth
             >
-              New Patient
-            </Button>
-            <Button size="small" fullWidth>
-              Schedule Appointment
-            </Button>
-            <Button size="small" fullWidth>
               Home
             </Button>
           </Box>

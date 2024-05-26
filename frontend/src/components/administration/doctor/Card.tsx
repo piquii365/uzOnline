@@ -12,7 +12,7 @@ import * as React from "react";
 import { Formik, Form } from "formik";
 import { useParams } from "react-router-dom";
 import CardCompleteModal from "./CardCompleteModal.js";
-const Card: React.FC = () => {
+const Card: React.FC = ({ currentCard }) => {
   const { id } = useParams();
   const [card, setCard] = React.useState({});
   const [open, setOpen] = React.useState(false);
@@ -39,16 +39,14 @@ const Card: React.FC = () => {
   const initialValues = {
     prescription: [],
     description: [],
-    otherDescription: "",
-    prescriptionRecommendation: "",
     recommendation: "",
   };
   const handleSubmit = (values) => {
     axiosPrivate
-      .put(`patient/${id}/doctor-prescription`, values)
+      .put(`patient/${id}/doctor-prescription/${currentCard}`, values)
       .then((result) => {
         if (result.data.status) {
-          handleOpen(result.data.Result);
+          handleOpen(result.data.FullPrescription);
         }
       })
       .catch((error) => {
@@ -61,7 +59,7 @@ const Card: React.FC = () => {
       sx={{ padding: "0.5em", height: "100%", width: "inherit" }}
     >
       <Typography sx={{ color: "#1A1A1A" }}>
-        Patient Details and Recommendations are recorded here
+        Patient Conditions and Prescription is recorded here
       </Typography>
       <Formik initialValues={initialValues} onSubmit={handleSubmit}>
         {({ handleChange, handleBlur, handleSubmit, setFieldValue }) => (
@@ -92,18 +90,7 @@ const Card: React.FC = () => {
                 )}
               />
             </Box>
-            <Box sx={{ my: "0.2em" }} component={FormControl} fullWidth>
-              <TextField
-                fullWidth
-                id="otherDescription"
-                size="small"
-                multiline
-                minRows={3}
-                label="Other Description"
-                onChange={handleChange}
-                onBlur={handleBlur}
-              />
-            </Box>
+
             <Box sx={{ my: "0.2em" }} component={FormControl} fullWidth>
               <Autocomplete
                 fullWidth
@@ -128,18 +115,7 @@ const Card: React.FC = () => {
                 )}
               />
             </Box>
-            <Box sx={{ my: "0.2em" }} component={FormControl} fullWidth>
-              <TextField
-                fullWidth
-                id="prescriptionRecommendation"
-                size="small"
-                multiline
-                minRows={3}
-                label="Recommendation on Prescription"
-                onChange={handleChange}
-                onBlur={handleBlur}
-              />
-            </Box>
+
             <Box sx={{ my: "0.2em" }} component={FormControl} fullWidth>
               <TextField
                 fullWidth
@@ -184,6 +160,17 @@ const Card: React.FC = () => {
                 size="small"
               >
                 Schedule Appointment
+              </Button>
+              <Button
+                sx={{
+                  bgcolor: "#293855",
+                  maxWidth: "fit-content",
+                  color: "white",
+                  "&:hover": { bgcolor: "#BEC3C7" },
+                }}
+                size="small"
+              >
+                Patient History
               </Button>
             </Box>
           </Form>

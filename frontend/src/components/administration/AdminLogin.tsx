@@ -34,6 +34,8 @@ const AdminLogin: React.FC = () => {
             navigate("/reception", { state: response.data.user });
           } else if (response.data.user.role == "Doctor") {
             navigate("/doctor", { state: response.data.user });
+          } else if (response.data.user.role == "Pharmacist") {
+            navigate("/pharmacy", { state: response.data.user });
           } else {
             setResult("Other User Views will be placed here");
           }
