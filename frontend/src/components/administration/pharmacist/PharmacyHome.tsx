@@ -23,6 +23,7 @@ const NavButton = styled(Button)({
   "&:hover": { backgroundColor: "gray", border: "none", color: "white" },
 });
 const PharmacyHome: React.FC = () => {
+  const [result, setResult] = React.useState("");
   const initialValues = {
     regNumber: "",
   };
@@ -35,6 +36,8 @@ const PharmacyHome: React.FC = () => {
           navigate(`/pharmacy/card/${values.regNumber}`, {
             state: result.data.Prescription,
           });
+        } else {
+          setResult(result.data.Result);
         }
       })
       .catch((error) => {
@@ -93,6 +96,11 @@ const PharmacyHome: React.FC = () => {
           <Typography variant="body2" paragraph>
             Enter Patient Reg Number.
           </Typography>
+          {result && (
+            <Typography color="red" variant="body2" paragraph>
+              {result}
+            </Typography>
+          )}
           <Divider />
           <Box>
             <Formik

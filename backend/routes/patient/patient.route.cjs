@@ -6,6 +6,7 @@ router.route("/new-patient").post(handlePatient.newPatient);
 router.route("/card/:id").get(handlePatient.getCard);
 router.route("/current/:id").get(handlePatient.getPatient);
 router.route("/prescription").post(handlePatient.getPrescription);
+router.route("/card/complete").put(handlePatient.completePrescription);
 router
   .route("/:id/doctor-prescription/:currentCard")
   .put(handlePatient.prescription);

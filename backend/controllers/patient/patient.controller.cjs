@@ -21,14 +21,12 @@ const newPatient = async (req, res) => {
         await card.save();
         await Card.findOneAndUpdate(
           { cardOwnerId: user._id },
-          { $set: { currentPrescription: card.visit[0]._id } }
+          { $set: { currentCard: card.visit[0]._id } }
         );
-
-        console.log(card);
         res.status(200).json({
           registered: true,
           user: user,
-          currentRecord: card.visit._id,
+          currentRecord: card.visit[0]._id,
         });
       } else {
         const currentVisit = card.visit.find((visit) => {
@@ -78,10 +76,12 @@ const newPatient = async (req, res) => {
             }
           );
           const currentCardRecord = newCard.visit[0]._id;
+          console.log("current card:" + currentCardRecord);
           const updatedCard = await Card.findOneAndUpdate(
             { cardOwnerId: user._id },
             { $set: { currentCard: currentCardRecord } }
           );
+          console.log(updatedCard);
           res.status(200).json({
             registered: true,
             user: user,
@@ -101,8 +101,7 @@ const getPatientDetails = async (req, res) => {
   try {
     const user = await Users.findOne(
       { regNumber: regNumber },
-      { password: false },
-      { refreshToken: false }
+      { password: 0, refreshToken: 0 }
     );
     if (user) {
       res.status(200).json({ registered: true, id: user._id });
@@ -116,7 +115,7 @@ const getCard = async (req, res) => {
   try {
     const { id } = req.params;
     const card = await Card.findOne({ cardOwnerId: id })
-      .sort({ date: -1 })
+      .sort({ date: 1 })
       .populate([
         "medications",
         { path: "administrations", select: ["username", "fullName"] },
@@ -153,12 +152,13 @@ const prescription = async (req, res) => {
       {
         $addToSet: {
           "visit.$.purposeOfVisit": { $each: description },
-          "visit.$.prescription": { $each: prescription },
+          "visit.$.prescription": {
+            $each: prescription,
+          },
           "visit.$.recommendations": recommendation,
         },
       }
     );
-
     if (result) {
       let prescription = result.visit.find((visit) => {
         return visit._id == currentCard;
@@ -196,6 +196,27 @@ const getPrescription = async (req, res) => {
     console.error(error);
   }
 };
+const completePrescription = async (req, res) => {
+  try {
+    const { currentCard, drugs } = req.body;
+    const card = await Card.findOneAndUpdate(
+      { visit: { $elemMatch: { _id: currentCard } } },
+      {
+        $set: {
+          "visit.$.collectedDrugs.drugs": drugs,
+          "visit.$.collectedDrugs.date": Date.now(),
+        },
+      }
+    );
+    res.status(200).json({ status: true });
+  } catch (error) {
+    res.status(404).json({
+      status: false,
+      Result: "The Server responded with code 404 page not found",
+    });
+    console.log(error);
+  }
+};
 module.exports = {
   getPatientDetails,
   newPatient,
@@ -203,4 +224,5 @@ module.exports = {
   getPatient,
   prescription,
   getPrescription,
+  completePrescription,
 };

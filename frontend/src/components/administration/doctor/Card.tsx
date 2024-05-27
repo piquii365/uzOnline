@@ -41,6 +41,7 @@ const Card: React.FC = ({ currentCard }) => {
     description: [],
     recommendation: "",
   };
+  console.log(currentCard);
   const handleSubmit = (values) => {
     axiosPrivate
       .put(`patient/${id}/doctor-prescription/${currentCard}`, values)

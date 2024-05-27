@@ -11,6 +11,7 @@ import {
 import * as React from "react";
 
 const CardCompleteModal: Reat.FC = ({ card, open, handleClose }) => {
+  console.log(card);
   return (
     <Box>
       <Modal open={open} onClose={handleClose}>

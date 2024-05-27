@@ -13,7 +13,7 @@ const DoctorNav: React.FC = () => {
   };
   const handleLogout = () => {
     axiosPrivate.get("/logout").then(() => {
-      window.location.href = "/admin/login";
+      window.location.href = "/admin";
     });
   };
   return (

@@ -16,7 +16,7 @@ import {
 import { Formik, Form } from "formik";
 import { axiosPrivate } from "../../api/axios.js";
 import { useNavigate } from "react-router-dom";
-
+import { adminLoginValidation } from "../../middleware/yup.js";
 const AdminLogin: React.FC = () => {
   const [result, setResult] = React.useState("");
   const navigate = useNavigate();
@@ -79,8 +79,12 @@ const AdminLogin: React.FC = () => {
         )}
         <Divider />
         <Box>
-          <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-            {({ handleSubmit, handleBlur, handleChange }) => (
+          <Formik
+            initialValues={initialValues}
+            onSubmit={handleSubmit}
+            validationSchema={adminLoginValidation}
+          >
+            {({ handleSubmit, handleBlur, handleChange, touched, errors }) => (
               <Form onSubmit={handleSubmit}>
                 <Box
                   component={FormControl}
@@ -94,6 +98,8 @@ const AdminLogin: React.FC = () => {
                     label="Username or Email address"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    error={touched.username && Boolean(errors.username)}
+                    helperText={touched.username && errors.username}
                   />
                 </Box>
                 <Box
@@ -108,6 +114,8 @@ const AdminLogin: React.FC = () => {
                     label="Password"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    error={touched.password && Boolean(errors.password)}
+                    helperText={touched.password && errors.password}
                   />
                 </Box>
                 <Box

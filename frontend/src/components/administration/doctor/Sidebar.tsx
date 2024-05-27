@@ -26,12 +26,12 @@ const Sidebar: React.FC = () => {
         sx={{ display: "flex", flexDirection: "column", gap: "0.5em" }}
       >
         <NavButton
-          href="/doctor/my-schedule"
+          href={`/doctor/${100}/schedule`}
           component={Link}
           fullWidth
           size="small"
         >
-          My Schedule
+          Schedule
         </NavButton>
         <NavButton
           sx={{ display: "flex", justifyContent: "start" }}

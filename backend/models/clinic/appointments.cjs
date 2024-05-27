@@ -9,27 +9,7 @@ const appointmentsSchema = new mongoose.Schema(
     ],
     appointment: [
       {
-        subject: {
-          type: String,
-        },
-        timeScheduled: {
-          type: Date,
-        },
-        specialNotes: {
-          type: String,
-        },
-        createdAt: {
-          type: Date,
-          default: Date.now(),
-        },
-        otherParticipants: {
-          name: {
-            type: String,
-          },
-          role: {
-            type: Number,
-          },
-        },
+        schedule: { type: mongoose.Schema.Types.ObjectId, ref: "Schedule" },
       },
     ],
   },

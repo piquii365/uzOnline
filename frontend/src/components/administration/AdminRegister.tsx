@@ -16,6 +16,7 @@ import {
 import { Formik, Form } from "formik";
 import { axiosPrivate } from "../../api/axios.js";
 import { useNavigate } from "react-router-dom";
+import { adminRegValSchema } from "../../middleware/yup.js";
 const AdminRegister: React.FC = () => {
   const navigate = useNavigate();
   const [result, setResult] = React.useState("");
@@ -76,7 +77,11 @@ const AdminRegister: React.FC = () => {
         )}
         <Divider />
         <Box>
-          <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+          <Formik
+            initialValues={initialValues}
+            onSubmit={handleSubmit}
+            validationSchema={adminRegValSchema}
+          >
             {({ handleSubmit, handleBlur, handleChange, errors, touched }) => (
               <Form onSubmit={handleSubmit}>
                 <Box
@@ -91,7 +96,6 @@ const AdminRegister: React.FC = () => {
                     label="Full Name"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    required
                     error={touched.fullName && Boolean(errors.fullName)}
                     helperText={touched.fullName && errors.fullName}
                   />
@@ -106,9 +110,10 @@ const AdminRegister: React.FC = () => {
                     id="username"
                     type="text"
                     label="Username"
-                    required
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    error={touched.username && Boolean(errors.username)}
+                    helperText={touched.username && errors.username}
                   />
                 </Box>
                 <Box
@@ -121,9 +126,10 @@ const AdminRegister: React.FC = () => {
                     id="email"
                     type="email"
                     label="Email"
-                    required
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    error={touched.email && Boolean(errors.email)}
+                    helperText={touched.email && errors.email}
                   />
                 </Box>
                 <Box
@@ -136,9 +142,10 @@ const AdminRegister: React.FC = () => {
                     id="password"
                     type="password"
                     label="password"
-                    required
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    error={touched.password && Boolean(errors.password)}
+                    helperText={touched.password && errors.password}
                   />
                 </Box>
                 <Box
@@ -150,10 +157,15 @@ const AdminRegister: React.FC = () => {
                     size="small"
                     id="confirmPassword"
                     type="password"
-                    required
                     label="Confirm Password"
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    error={
+                      touched.confirmPassword && Boolean(errors.confirmPassword)
+                    }
+                    helperText={
+                      touched.confirmPassword && errors.confirmPassword
+                    }
                   />
                 </Box>
                 <Box
@@ -234,7 +246,8 @@ const AdminRegister: React.FC = () => {
                     label="Id Number"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    required
+                    error={touched.idNumber && Boolean(errors.idNumber)}
+                    helperText={touched.idNumber && errors.idNumber}
                   />
                 </Box>
                 <Box
@@ -250,7 +263,8 @@ const AdminRegister: React.FC = () => {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     minRows={3}
-                    required
+                    error={touched.address && Boolean(errors.address)}
+                    helperText={touched.address && errors.address}
                   />
                 </Box>
                 <Box
@@ -264,7 +278,8 @@ const AdminRegister: React.FC = () => {
                     label="Phone Number"
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    required
+                    error={touched.phoneNumber && Boolean(errors.phoneNumber)}
+                    helperText={touched.phoneNumber && errors.phoneNumber}
                   />
                 </Box>
                 <Box
@@ -279,7 +294,7 @@ const AdminRegister: React.FC = () => {
                   component={FormControl}
                   sx={{ py: "0.5em", width: "100%" }}
                 >
-                  <Button href="/admin/login" size="small" component={Link}>
+                  <Button href="/admin" size="small" component={Link}>
                     I already have an account
                   </Button>
                 </Box>

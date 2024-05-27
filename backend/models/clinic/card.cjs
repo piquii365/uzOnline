@@ -6,6 +6,7 @@ const cardSchema = new mongoose.Schema(
       required: true,
       ref: "User",
     },
+    currentCard: { type: mongoose.Schema.Types.ObjectId },
     visit: [
       {
         date: {
@@ -24,9 +25,16 @@ const cardSchema = new mongoose.Schema(
           },
         ],
         recommendations: { type: String },
+        collectedDrugs: {
+          drugs: [{ type: String }],
+          date: { type: Date, default: Date.now() },
+          receivedFrom: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Administration",
+          },
+        },
       },
     ],
-    currentCard: { type: mongoose.Schema.Types.ObjectId },
   },
   { timestamps: true, strictPopulate: false }
 );

@@ -4,12 +4,12 @@ import {
   Box,
   styled,
   IconButton,
-  Typography,
   Link,
   Tooltip,
   Button,
 } from "@mui/material";
 import * as React from "react";
+import { axiosPrivate } from "../../../api/axios.js";
 const ItemContainer = styled(Box)({
   display: "flex",
   flexDirection: "row",
@@ -17,6 +17,12 @@ const ItemContainer = styled(Box)({
   alignItems: "center",
 });
 const PharmacyNav: React.FC = ({ user, username }) => {
+  const id = user;
+  const handleLogout = () => {
+    axiosPrivate.get("/logout").then(() => {
+      window.location.href = "/admin";
+    });
+  };
   return (
     <Stack
       sx={{
@@ -29,19 +35,23 @@ const PharmacyNav: React.FC = ({ user, username }) => {
     >
       <ItemContainer>
         <Tooltip title="Home">
-          <IconButton size="small">
+          <IconButton href={"/pharmacy"} component={Link} size="small">
             <Home />
           </IconButton>
         </Tooltip>
       </ItemContainer>
       <ItemContainer>
         <Tooltip title={"Profile"}>
-          <Button href={`/pharmacy/${user}`} size="small" component={Link}>
+          <Button
+            href={`/pharmacy/${id}/profile`}
+            size="small"
+            component={Link}
+          >
             {username}
           </Button>
         </Tooltip>
         <Tooltip title="Logout">
-          <IconButton size="small">
+          <IconButton onClick={handleLogout} size="small">
             <Logout />
           </IconButton>
         </Tooltip>
