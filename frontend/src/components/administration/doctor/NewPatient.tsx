@@ -14,8 +14,9 @@ import { regNumberValidationSchema } from "../../../middleware/yup.js";
 import { Formik, Form } from "formik";
 import { Close } from "@mui/icons-material";
 import { axiosPrivate } from "../../../api/axios.js";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 const NewPatient = ({ open, handleClose }) => {
+  const { id } = useParams();
   const navigate = useNavigate();
   const [result, setResult] = React.useState("");
   const initialValues = {
@@ -26,7 +27,9 @@ const NewPatient = ({ open, handleClose }) => {
       .get(`/patient/details/${values.regNumber}`)
       .then((result) => {
         if (result.data.registered) {
-          navigate(`/doctor/current-patient/${result.data.id}`);
+          navigate(`/doctor/${id}/current-patient/${values.regNumber}`, {
+            state: result.data.id,
+          });
           handleClose();
         } else {
           setResult("Patient not Registered please ask the reception for help");

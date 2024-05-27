@@ -148,7 +148,7 @@ const prescription = async (req, res) => {
     const { id, currentCard } = req.params;
     const { prescription, description, recommendation } = req.body;
     const result = await Card.findOneAndUpdate(
-      { $and: [{ cardOwnerId: id }, { "visit._id": currentCard }] },
+      { "visit._id": currentCard },
       {
         $addToSet: {
           "visit.$.purposeOfVisit": { $each: description },
@@ -165,6 +165,7 @@ const prescription = async (req, res) => {
       });
       res.status(200).json({ status: true, FullPrescription: prescription });
     } else {
+      console.log(result);
       res.status(200).json({
         status: false,
         Result: "Error while saving prescription recommended action re-save",

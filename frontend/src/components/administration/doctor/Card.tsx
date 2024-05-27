@@ -46,6 +46,7 @@ const Card: React.FC = ({ currentCard }) => {
     axiosPrivate
       .put(`patient/${id}/doctor-prescription/${currentCard}`, values)
       .then((result) => {
+        console.log(result.data);
         if (result.data.status) {
           handleOpen(result.data.FullPrescription);
         }
@@ -161,17 +162,6 @@ const Card: React.FC = ({ currentCard }) => {
                 size="small"
               >
                 Schedule Appointment
-              </Button>
-              <Button
-                sx={{
-                  bgcolor: "#293855",
-                  maxWidth: "fit-content",
-                  color: "white",
-                  "&:hover": { bgcolor: "#BEC3C7" },
-                }}
-                size="small"
-              >
-                Patient History
               </Button>
             </Box>
           </Form>

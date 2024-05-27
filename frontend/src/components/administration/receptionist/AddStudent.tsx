@@ -41,7 +41,7 @@ const AddStudent: React.FC = () => {
       .post("/auth/register", finalValue)
       .then((result) => {
         if (result.data.registered) {
-          navigate("/reception/student-details", {
+          navigate("/reception", {
             state: finalValue.regNumber,
           });
         } else if (result.data.status) {

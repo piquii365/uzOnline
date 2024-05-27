@@ -33,6 +33,7 @@ app.use("/student", require("./routes/student/student.route.cjs"));
 app.use("/profile", require("./routes/profile/update.profile.route.cjs"));
 app.use("/admin", require("./routes/auth/admin.route.cjs"));
 app.use("/patient", require("./routes/patient/patient.route.cjs"));
+app.use(require("./routes/schedule/schedule.routes.cjs"));
 //app
 const PORT = process.env.PORT;
 const HOST = process.env.HOST;

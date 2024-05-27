@@ -33,7 +33,9 @@ const AdminLogin: React.FC = () => {
           if (response.data.user.role == "Receptionist") {
             navigate("/reception", { state: response.data.user });
           } else if (response.data.user.role == "Doctor") {
-            navigate("/doctor", { state: response.data.user });
+            navigate(`/doctor/${response.data.user.id}`, {
+              state: response.data.user,
+            });
           } else if (response.data.user.role == "Pharmacist") {
             navigate("/pharmacy", { state: response.data.user });
           } else {

@@ -1,24 +1,17 @@
 const mongoose = require("mongoose");
 const scheduleSchema = new mongoose.Schema(
   {
-    date: {
-      type: Date,
+    scheduler: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Administration",
+      required: true,
     },
-    startTime: { type: String },
-    duration: { type: String },
-    agenda: {
-      type: String,
-    },
-    participants: {
-      studentParticipants: [
-        { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-      ],
-      administrationParticipants: [
-        { type: mongoose.Schema.Types.ObjectId, ref: "Administration" },
-      ],
-      otherParticipants: [{ type: String }],
-    },
+    appointment: [
+      {
+        schedule: { type: mongoose.Schema.Types.ObjectId, ref: "Appointment" },
+      },
+    ],
   },
-  { timestamps: true, strictPopulate: false }
+  { timestamps: true }
 );
-module.exports = new mongoose.models("Schedule", scheduleSchema);
+module.exports = new mongoose.model("Schedule", scheduleSchema);

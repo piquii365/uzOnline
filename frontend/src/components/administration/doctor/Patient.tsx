@@ -17,7 +17,9 @@ import {
 import Card from "./Card.tsx";
 import { axiosPrivate } from "../../../api/axios.js";
 import * as React from "react";
-import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import PatientHistory from "./PatientHistory.tsx";
+
 const NavButton = styled(Button)({
   display: "flex",
   justifyContent: "start",
@@ -40,9 +42,11 @@ const Patient = () => {
     nextOfKinRelationship: "",
     nextOfKinPhoneNumber: "",
   });
+  const [open, setOpen] = React.useState(false);
+  const [selected, setSelected] = React.useState({});
+  const { state: id } = useLocation();
   const [card, setCard] = React.useState({});
   const [result, setResult] = React.useState("");
-  const { id } = useParams();
   const fetchPatient = React.useCallback(async () => {
     const response = await axiosPrivate.get(`/patient/current/${id}`);
     if (response.data.registered) {
@@ -98,7 +102,16 @@ const Patient = () => {
   const currentCard = card?.visit?.find((cardItem) => {
     return cardItem._id === card.currentCard;
   });
-  console.log(currentCard);
+  const handleOpen = (card) => {
+    setSelected(card);
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const openCard = () => {
+    handleOpen(card);
+  };
   return (
     <>
       {patient !== null || undefined ? (
@@ -205,20 +218,26 @@ const Patient = () => {
                 component={Paper}
                 sx={{ padding: "0.5em", marginBottom: "1em" }}
               >
-                <Typography
+                <Box
                   sx={{
                     padding: "0.5em",
                     width: "inherit",
                     backgroundColor: "#293855",
                     color: "white",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
                   }}
-                  paragraph
                 >
-                  Card
-                </Typography>
+                  <Typography paragraph>Card</Typography>
+                  <Button onClick={openCard} size="small">
+                    View History
+                  </Button>
+                </Box>
+
                 {patient === null || undefined ? (
                   <Typography color="red" variant="body2" paragraph>
-                    Patient did not register
+                    {result}
                   </Typography>
                 ) : (
                   <Box
@@ -267,6 +286,11 @@ const Patient = () => {
                       </Box>
                     )}
                     <Card currentCard={card.currentCard} />
+                    <PatientHistory
+                      card={selected}
+                      open={open}
+                      handleClose={handleClose}
+                    />
                   </Box>
                 )}
               </Box>

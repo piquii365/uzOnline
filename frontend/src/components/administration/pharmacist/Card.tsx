@@ -10,10 +10,11 @@ import {
   Button,
 } from "@mui/material";
 import * as React from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { axiosPrivate } from "../../../api/axios.js";
 import CardComplete from "./CardComplete.js";
 const Card: React.FC = () => {
+  const navigate = useNavigate();
   const { regNumber } = useParams();
   const { state } = useLocation();
   const [selection, setSelection] = React.useState(false);
@@ -63,6 +64,7 @@ const Card: React.FC = () => {
     setOpen(true);
   };
   const handleClose = () => {
+    navigate("/pharmacy");
     setOpen(false);
   };
   return (
